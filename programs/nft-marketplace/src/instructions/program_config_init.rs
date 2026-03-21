@@ -40,7 +40,7 @@ pub struct ProgramConfigInit<'info> {
 }
 
 impl<'info> ProgramConfigInit<'info> {
-    pub fn init(ctx: Context<Self>, args: ProgramConfigArgs) -> Result<()> {
+    pub fn program_config_init(ctx: Context<Self>, args: ProgramConfigArgs) -> Result<()> {
         let program_config = &mut ctx.accounts.program_config;
 
         program_config.authority = args.authority;

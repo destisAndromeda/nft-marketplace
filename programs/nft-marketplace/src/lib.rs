@@ -13,10 +13,10 @@ declare_id!("3xypSWG2NbT5Sx3htRgtqy87AEtyu61tvTp1sJab5o2X");
 pub mod nft_marketplace {
     use super::*;
     pub fn program_config_init(ctx: Context<ProgramConfigInit>, args: ProgramConfigArgs) -> Result<()> {
-        ProgramConfigInit::init(ctx, args)
+        ProgramConfigInit::program_config_init(ctx, args)
     }
 
-    pub fn program_config_update(ctx: Context<ProgramConfig>) -> Result<()> {
-        Ok(())
+    pub fn program_config_update(ctx: Context<ProgramConfig>, args: ProgramConfigUpdateArgs) -> Result<()> {
+        ProgramConfigUpdate::program_config_update(ctx, args)
     }
 }
