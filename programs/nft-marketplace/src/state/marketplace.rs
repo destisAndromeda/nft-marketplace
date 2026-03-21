@@ -10,7 +10,7 @@ pub struct Marketplace {
 	/// Marketplace trading fee
 	pub fee_percentage: u64,
 	/// For lot PDA compute
-	pub lot_index: u64, // @TODO: rename to transaction_index
+	pub transaction_index: u64,
  	/// Marketplace index inside ProgramConfig
 	pub self_index: u64,
 	// Bump for marketplace PDA seed
