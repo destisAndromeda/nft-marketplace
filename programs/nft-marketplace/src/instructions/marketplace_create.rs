@@ -56,7 +56,6 @@ impl<'info> MarketplaceCreate<'info> {
         marketplace.bump = ctx.bumps.marketplace;
 
         marketplace.transaction_index = 0;
-        marketplace.self_index = ctx.accounts.program_config.transaction_index;
         ctx.accounts.program_config.transaction_index += 1;
 
         Ok(())
