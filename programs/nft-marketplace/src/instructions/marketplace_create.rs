@@ -50,11 +50,12 @@ impl<'info> MarketplaceCreate<'info> {
         let marketplace = &mut ctx.accounts.marketplace;
 
         marketplace.multisig_owner = ctx.accounts.owner.key();
-        marketplace.creator_key = args.creator_key;
+        marketplace.creator_key    = args.creator_key;
+
         marketplace.fee_percentage = args.fee_percentage;
-        marketplace.lot_transaction_index = 0;
         marketplace.bump = ctx.bumps.marketplace;
 
+        marketplace.lot_index = 0;
         ctx.accounts.program_config.marketplace_index += 1;
 
         Ok(())

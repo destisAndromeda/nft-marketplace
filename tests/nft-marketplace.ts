@@ -80,7 +80,7 @@ describe("nft-marketplace", () => {
 
   it("Fails when updated by non-authority", async () => {
     const maliciousActor = anchor.web3.Keypair.generate();
-    
+
     try {
       await program.methods
         .programConfigUpdate({
@@ -120,7 +120,7 @@ describe("nft-marketplace", () => {
 
     const programConfigAccount = await program.account.programConfig.fetch(programConfigPda);
     expect(programConfigAccount.authority.toBase58()).to.equal(newAuthority.publicKey.toBase58());
-    
+
     // Update local variable for subsequent tests if any
     // initialAuthority.publicKey = newAuthority.publicKey; // initialAuthority is Keypair, can't just change pubkey easily in this logic
   });
