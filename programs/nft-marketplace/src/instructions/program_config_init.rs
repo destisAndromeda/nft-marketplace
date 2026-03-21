@@ -46,6 +46,7 @@ impl<'info> ProgramConfigInit<'info> {
         program_config.authority = args.authority;
         program_config.treasury  = args.treasury;
         program_config.marketplace_deploy_authority = args.marketplace_deploy_authority;
+        program_config.bump = ctx.bumps.program_config;
 
         Ok(())
     }

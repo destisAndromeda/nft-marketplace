@@ -9,4 +9,6 @@ pub struct ProgramConfig {
     pub marketplace_deploy_authority: Pubkey,
     /// For trading platform fee
     pub treasury: Pubkey,
+    /// Bump for ProgramConfig PDA seed
+    pub bump: u8,
 }
