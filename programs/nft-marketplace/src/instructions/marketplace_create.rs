@@ -28,7 +28,7 @@ pub struct MarketplaceCreate<'info> {
             PROGRAM_PREFIX,
             program_config.marketplace_deploy_authority.key().as_ref(),
             MARKETPLACE,
-            &program_config.marketplace_index.to_le_bytes(),
+            &program_config.transaction_index.to_le_bytes(),
         ],
         bump,
     )]
@@ -55,9 +55,9 @@ impl<'info> MarketplaceCreate<'info> {
         marketplace.fee_percentage = args.fee_percentage;
         marketplace.bump = ctx.bumps.marketplace;
 
-        marketplace.lot_index = 0;
-        marketplace.self_index = ctx.accounts.program_config.marketplace_index;
-        ctx.accounts.program_config.marketplace_index += 1;
+        marketplace.transaction_index = 0;
+        marketplace.self_index = ctx.accounts.program_config.transaction_index;
+        ctx.accounts.program_config.transaction_index += 1;
 
         Ok(())
     }

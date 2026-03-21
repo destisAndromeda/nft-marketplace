@@ -48,7 +48,7 @@ impl<'info> ProgramConfigInit<'info> {
         program_config.marketplace_deploy_authority = args.marketplace_deploy_authority;
         program_config.bump = ctx.bumps.program_config;
 
-        program_config.marketplace_index = 0;
+        program_config.transaction_index = 0;
 
         Ok(())
     }
