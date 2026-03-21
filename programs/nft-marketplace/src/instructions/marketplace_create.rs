@@ -5,7 +5,11 @@ use crate::seeds::*;
 use crate::error::*;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
-pub struct MarketplaceCreateArgs {}
+pub struct MarketplaceCreateArgs {
+    pub creator_key: Pubkey,
+
+    pub fee_percentage: u64,
+}
 
 #[derive(Accounts)]
 pub struct MarketplaceCreate<'info> {
@@ -14,11 +18,11 @@ pub struct MarketplaceCreate<'info> {
         address = program_config.marketplace_deploy_authority @
             CustomError::Unauthorized,
     )]
-    pub payer: Signer<'info>,
+    pub owner: Signer<'info>,
 
     #[account(
         init,
-        payer = payer,
+        payer = owner,
         space = 8 + Marketplace::INIT_SPACE,
         seeds = [
             PROGRAM_PREFIX,
@@ -43,6 +47,15 @@ pub struct MarketplaceCreate<'info> {
 
 impl<'info> MarketplaceCreate<'info> {
     pub fn marketplace_create(ctx: Context<Self>, args: MarketplaceCreateArgs) -> Result<()> {
+        let marketplace = &mut ctx.accounts.marketplace;
+
+        marketplace.multisig_owner = ctx.accounts.owner.key();
+        marketplace.creator_key = args.creator_key;
+        marketplace.fee_percentage = args.fee_percentage;
+        marketplace.lot_transaction_index = 0;
+        marketplace.bump = ctx.bumps.marketplace;
+
+        ctx.accounts.program_config.marketplace_index += 1;
 
         Ok(())
     }
