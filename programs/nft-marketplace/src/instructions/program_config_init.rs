@@ -8,7 +8,7 @@ use crate::error::*;
 const INITIALIZER: Pubkey = pubkey!("GtmrJehR49tXwFh7W4x2kGy61czbEboYSkHQDJw7Ggeb");
 
 #[cfg(feature = "testing")]
-const INITIALIZER: Pubkey = pubkey!("GtmrJehR49tXwFh7W4x2kGy61czbEboYSkHQDJw7Ggeb"); 
+const INITIALIZER: Pubkey = pubkey!("GAe1b8H1eUQhGuwAEJKstXLFdpaoHp9voszu1uw46Htm"); 
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct ProgramConfigArgs {
