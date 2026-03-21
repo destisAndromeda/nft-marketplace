@@ -6,7 +6,11 @@ use crate::error::*;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct LotCreateArgs {
-    marketplace_index: u64,
+    pub marketplace_index: u64,
+
+    pub mint: Pubkey,
+ 
+    pub currency: Pubkey,
 }
 
 #[derive(Accounts)]
@@ -53,10 +57,18 @@ pub struct LotCreate<'info> {
 
 impl<'info> LotCreate<'info> {
     pub fn lot_create(ctx: Context<LotCreate>, args: LotCreateArgs) -> Result<()> {
-        
+        let lot = &mut ctx.accounts.lot;
 
-        // ctx.accounts.marketplace.transaction_index =
-        // ctx.accounts.marketplace.transaction_index.checked_add(1).unwrap();
+        lot.marketplace = ctx.accounts.marketplace.key();
+        lot.owner    = ctx.accounts.owner.key();
+        
+        lot.mint     = args.mint;
+        lot.currency = args.currency;
+        
+        lot.bump     = ctx.bumps.lot;
+
+        ctx.accounts.marketplace.transaction_index =
+        ctx.accounts.marketplace.transaction_index.checked_add(1).unwrap();
 
         Ok(())
     }
