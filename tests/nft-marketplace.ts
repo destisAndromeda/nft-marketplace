@@ -15,7 +15,6 @@ describe("nft-marketplace", () => {
   );
 
   const initialAuthority = anchor.web3.Keypair.generate();
-  const initialMarketplaceDeployAuthority = anchor.web3.Keypair.generate().publicKey;
   const initialTreasury = anchor.web3.Keypair.generate().publicKey;
 
   before(async () => {
@@ -51,14 +50,14 @@ describe("nft-marketplace", () => {
     const feePercentage = new anchor.BN(500); // 5%
 
     const programConfigAccountBefore = await program.account.programConfig.fetch(programConfigPda);
-    const marketplaceIndex = programConfigAccountBefore.marketplaceIndex;
+    const transactionIndex = programConfigAccountBefore.transactionIndex;
 
     const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("marketplace"),
         programConfigAccountBefore.marketplaceDeployAuthority.toBuffer(),
         Buffer.from("marketplace"),
-        marketplaceIndex.toArrayLike(Buffer, "le", 8),
+        transactionIndex.toArrayLike(Buffer, "le", 8),
       ],
       program.programId
     );
@@ -81,11 +80,44 @@ describe("nft-marketplace", () => {
     expect(marketplaceAccount.multisigOwner.toBase58()).to.equal(initialAuthority.publicKey.toBase58());
     expect(marketplaceAccount.creatorKey.toBase58()).to.equal(creatorKey.toBase58());
     expect(marketplaceAccount.feePercentage.toNumber()).to.equal(feePercentage.toNumber());
-    expect(marketplaceAccount.lotIndex.toNumber()).to.equal(0);
-    expect(marketplaceAccount.selfIndex.toNumber()).to.equal(marketplaceIndex.toNumber());
+    expect(marketplaceAccount.transactionIndex.toNumber()).to.equal(0);
 
     const programConfigAccountAfter = await program.account.programConfig.fetch(programConfigPda);
-    expect(programConfigAccountAfter.marketplaceIndex.toNumber()).to.equal(marketplaceIndex.toNumber() + 1);
+    expect(programConfigAccountAfter.transactionIndex.toNumber()).to.equal(transactionIndex.toNumber() + 1);
+  });
+
+  it("Updates marketplace fee percentage", async () => {
+    const newFee = new anchor.BN(1000); // 10%
+    const programConfigAccount = await program.account.programConfig.fetch(programConfigPda);
+    
+    // As in our previous test, we use the first marketplace created (index 0)
+    const marketplaceIndex = new anchor.BN(0); 
+
+    const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("marketplace"),
+        initialAuthority.publicKey.toBuffer(),
+        Buffer.from("marketplace"),
+        marketplaceIndex.toArrayLike(Buffer, "le", 8),
+      ],
+      program.programId
+    );
+
+    await program.methods
+      .marketplaceFeePercentageUpdate({
+        selfIndex: marketplaceIndex,
+        feePercentage: newFee,
+      })
+      .accounts({
+        marketplace: marketplacePda,
+        multisigOwner: initialAuthority.publicKey,
+        programConfig: programConfigPda,
+      })
+      .signers([initialAuthority])
+      .rpc();
+
+    const marketplaceAccount = await program.account.marketplace.fetch(marketplacePda);
+    expect(marketplaceAccount.feePercentage.toNumber()).to.equal(newFee.toNumber());
   });
 
   it("Updates only the marketplace deploy authority", async () => {
