@@ -10,7 +10,7 @@ pub struct Marketplace {
 	/// Marketplace trading fee
 	pub fee_percentage: u64,
 	/// For lot PDA compute
-	pub lot_transaction_index: u64, // @TODO: rename to lot_index
+	pub lot_index: u64, // @TODO: rename to lot_index
 	// Bump for marketplace PDA seed
 	pub bump: u8,
 }
