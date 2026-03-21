@@ -10,7 +10,7 @@ pub struct ProgramConfig {
     /// For trading platform fee
     pub treasury: Pubkey,
     /// Needed for Marketplace PDA seed
-    pub marketplace_index: u64,
+    pub marketplace_index: u64, // @TODO: rename to transaction index
     /// Bump for ProgramConfig PDA seed
     pub bump: u8,
 }

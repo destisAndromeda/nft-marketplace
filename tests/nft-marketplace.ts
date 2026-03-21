@@ -82,6 +82,7 @@ describe("nft-marketplace", () => {
     expect(marketplaceAccount.creatorKey.toBase58()).to.equal(creatorKey.toBase58());
     expect(marketplaceAccount.feePercentage.toNumber()).to.equal(feePercentage.toNumber());
     expect(marketplaceAccount.lotIndex.toNumber()).to.equal(0);
+    expect(marketplaceAccount.selfIndex.toNumber()).to.equal(marketplaceIndex.toNumber());
 
     const programConfigAccountAfter = await program.account.programConfig.fetch(programConfigPda);
     expect(programConfigAccountAfter.marketplaceIndex.toNumber()).to.equal(marketplaceIndex.toNumber() + 1);
