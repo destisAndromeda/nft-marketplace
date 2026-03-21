@@ -86,11 +86,67 @@ describe("nft-marketplace", () => {
     expect(programConfigAccountAfter.transactionIndex.toNumber()).to.equal(transactionIndex.toNumber() + 1);
   });
 
+  it("Creates a lot", async () => {
+    const mint = anchor.web3.Keypair.generate().publicKey;
+    const currency = anchor.web3.Keypair.generate().publicKey;
+    const price = new anchor.BN(1000000); // 0.001 SOL (if currency is SOL)
+
+    const marketplaceIndex = new anchor.BN(0);
+    const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("marketplace"),
+        initialAuthority.publicKey.toBuffer(),
+        Buffer.from("marketplace"),
+        marketplaceIndex.toArrayLike(Buffer, "le", 8),
+      ],
+      program.programId
+    );
+
+    const marketplaceAccountBefore = await program.account.marketplace.fetch(marketplacePda);
+    const lotTransactionIndex = marketplaceAccountBefore.transactionIndex;
+
+    const [lotPda] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("marketplace"),
+        marketplacePda.toBuffer(),
+        Buffer.from("transaction"),
+        initialAuthority.publicKey.toBuffer(),
+        Buffer.from("lot"),
+        lotTransactionIndex.toArrayLike(Buffer, "le", 8),
+      ],
+      program.programId
+    );
+
+    await program.methods
+      .lotCreate({
+        marketplaceIndex: marketplaceIndex,
+        mint: mint,
+        currency: currency,
+        price: price,
+      })
+      .accounts({
+        owner: initialAuthority.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
+        programConfig: programConfigPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .signers([initialAuthority])
+      .rpc();
+
+    const lotAccount = await program.account.lot.fetch(lotPda);
+    expect(lotAccount.marketplace.toBase58()).to.equal(marketplacePda.toBase58());
+    expect(lotAccount.owner.toBase58()).to.equal(initialAuthority.publicKey.toBase58());
+    expect(lotAccount.mint.toBase58()).to.equal(mint.toBase58());
+    expect(lotAccount.currency.toBase58()).to.equal(currency.toBase58());
+    expect(lotAccount.price.toNumber()).to.equal(price.toNumber());
+
+    const marketplaceAccountAfter = await program.account.marketplace.fetch(marketplacePda);
+    expect(marketplaceAccountAfter.transactionIndex.toNumber()).to.equal(lotTransactionIndex.toNumber() + 1);
+  });
+
   it("Updates marketplace fee percentage", async () => {
     const newFee = new anchor.BN(1000); // 10%
-    const programConfigAccount = await program.account.programConfig.fetch(programConfigPda);
-    
-    // As in our previous test, we use the first marketplace created (index 0)
     const marketplaceIndex = new anchor.BN(0); 
 
     const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
