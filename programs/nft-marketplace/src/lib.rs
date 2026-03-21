@@ -19,4 +19,8 @@ pub mod nft_marketplace {
     pub fn program_config_update(ctx: Context<ProgramConfigUpdate>, args: ProgramConfigUpdateArgs) -> Result<()> {
         ProgramConfigUpdate::program_config_update(ctx, args)
     }
+
+    pub fn marketplace_create(ctx: Context<MarketplaceCreate>, args: MarketplaceCreateArgs) -> Result<()> {
+        MarketplaceCreate::marketplace_create(ctx, args)
+    }
 }
