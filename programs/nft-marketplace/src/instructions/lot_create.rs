@@ -51,13 +51,13 @@ pub struct LotCreate<'info> {
     pub system_program: Program<'info, System>,
 }
 
-// impl<'info> LotCreate<'info> {
-//     pub fn lot_create(ctx: Context<LotCreate>, args: LotCreateArgs) -> Result<()> {
+impl<'info> LotCreate<'info> {
+    pub fn lot_create(ctx: Context<LotCreate>, args: LotCreateArgs) -> Result<()> {
         
 
-//         ctx.accounts.marketplace.transaction_index =
-//         ctx.accounts.marketplace.transaction_index.checked_add(1).unwrap();
+        // ctx.accounts.marketplace.transaction_index =
+        // ctx.accounts.marketplace.transaction_index.checked_add(1).unwrap();
 
-//         Ok(())
-//     }
-// }
+        Ok(())
+    }
+}
