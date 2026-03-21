@@ -6,7 +6,7 @@ use crate::error::*;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct MarketplaceFeePercentageUpdateArgs {
-    pub self_index: u64,
+    pub self_index: u64, // @TODO: rename self_index to transaction_index
 
     pub fee_percentage: u64,
 }

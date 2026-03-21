@@ -1,11 +1,63 @@
 use anchor_lang::prelude::*;
 
-// #[derive(AnchorSerialize, AnchorDeserialize)]
-// pub struct LotCreateArgs {}
+use crate::state::*;
+use crate::seeds::*;
+use crate::error::*;
 
-#[derive(Accounts)]
-pub struct LotCreate<'info> {
-
-
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct LotCreateArgs {
+    marketplace_index: u64,
 }
 
+#[derive(Accounts)]
+#[instruction(args: LotCreateArgs)]
+pub struct LotCreate<'info> {
+    pub owner: Signer<'info>,
+
+    #[account(
+        init,
+        payer = owner,
+        space = 8 + Lot::INIT_SPACE,
+        seeds = [
+            PROGRAM_PREFIX,
+            marketplace.key().as_ref(),
+            TRANSACTION,
+            owner.key().as_ref(),
+            LOT,
+            &marketplace.transaction_index.to_le_bytes(),
+        ],
+        bump,
+    )]
+    pub lot: Account<'info, Lot>,
+
+    #[account(
+        mut,
+        seeds = [
+            PROGRAM_PREFIX,
+            program_config.marketplace_deploy_authority.key().as_ref(),
+            MARKETPLACE,
+            &args.marketplace_index.to_le_bytes(),
+        ],
+        bump  = marketplace.bump,
+    )]
+    pub marketplace: Account<'info, Marketplace>,
+
+    #[account(
+        seeds = [PROGRAM_PREFIX, PROGRAM_CONFIG],
+        bump  = program_config.bump,
+    )]
+    pub program_config: Account<'info, ProgramConfig>,
+
+    pub system_program: Program<'info, System>,
+}
+
+// impl<'info> LotCreate<'info> {
+//     pub fn lot_create(ctx: Context<LotCreate>, args: LotCreateArgs) -> Result<()> {
+        
+
+//         ctx.accounts.marketplace.transaction_index =
+//         ctx.accounts.marketplace.transaction_index.checked_add(1).unwrap();
+
+//         Ok(())
+//     }
+// }

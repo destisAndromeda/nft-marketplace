@@ -26,7 +26,7 @@ pub struct MarketplaceCreate<'info> {
         space = 8 + Marketplace::INIT_SPACE,
         seeds = [
             PROGRAM_PREFIX,
-            program_config.marketplace_deploy_authority.key().as_ref(),
+            program_config.marketplace_deploy_authority.key().as_ref(), // owner
             MARKETPLACE,
             &program_config.transaction_index.to_le_bytes(),
         ],
