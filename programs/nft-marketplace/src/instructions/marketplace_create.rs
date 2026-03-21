@@ -57,7 +57,9 @@ impl<'info> MarketplaceCreate<'info> {
 
         marketplace.transaction_index = 0;
         ctx.accounts.program_config.transaction_index = 
-        ctx.accounts.program_config.transaction_index.checked_add(1).unwrap();
+        ctx.accounts.program_config.transaction_index.checked_add(1).ok_or(
+            CustomError::Overflow,
+        )?;
 
         Ok(())
     }

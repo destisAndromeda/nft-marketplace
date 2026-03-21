@@ -71,7 +71,9 @@ impl<'info> LotCreate<'info> {
         lot.bump     = ctx.bumps.lot;
 
         ctx.accounts.marketplace.transaction_index =
-        ctx.accounts.marketplace.transaction_index.checked_add(1).unwrap();
+        ctx.accounts.marketplace.transaction_index.checked_add(1).ok_or(
+            CustomError::Overflow,
+        )?;
 
         Ok(())
     }
