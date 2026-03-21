@@ -4,8 +4,8 @@ use crate::state::*;
 use crate::seeds::*;
 use crate::error::*;
 
-// #[derive(AnchorSerialize, AnchorDeserialize)]
-// pub struct MarketplaceCreateArgs {}
+#[derive(AnchorSerialize, AnchorDeserialize)]
+pub struct MarketplaceCreateArgs {}
 
 #[derive(Accounts)]
 pub struct MarketplaceCreate<'info> {
@@ -39,4 +39,11 @@ pub struct MarketplaceCreate<'info> {
 
 
     pub system_program: Program<'info, System>,
+}
+
+impl<'info> MarketplaceCreate<'info> {
+    pub fn marketplace_create(ctx: Context<Self>, args: MarketplaceCreateArgs) -> Result<()> {
+
+        Ok(())
+    }
 }
