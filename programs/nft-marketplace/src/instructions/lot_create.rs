@@ -18,6 +18,7 @@ pub struct LotCreateArgs {
 #[derive(Accounts)]
 #[instruction(args: LotCreateArgs)]
 pub struct LotCreate<'info> {
+    #[account(mut)]
     pub owner: Signer<'info>,
 
     #[account(
@@ -58,7 +59,7 @@ pub struct LotCreate<'info> {
 }
 
 impl<'info> LotCreate<'info> {
-    pub fn lot_create(ctx: Context<LotCreate>, args: LotCreateArgs) -> Result<()> {
+    pub fn lot_create(ctx: Context<Self>, args: LotCreateArgs) -> Result<()> {
         let lot = &mut ctx.accounts.lot;
 
         lot.marketplace = ctx.accounts.marketplace.key();

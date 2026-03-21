@@ -40,4 +40,11 @@ pub mod nft_marketplace {
     ) -> Result<()> {
         MarketplaceFeePercentageUpdate::marketplace_fee_percentage_update(ctx, args)
     }
+
+    pub fn lot_create(
+        ctx: Context<LotCreate>,
+        args: LotCreateArgs,
+    ) -> Result<()> {
+        LotCreate::lot_create(ctx, args)
+    }
 }
