@@ -11,6 +11,8 @@ pub struct Lot {
     pub mint: Pubkey,
     /// Current NFT price
     pub currency: Pubkey,
+    /// NFT price in lamports
+    pub price: u64,
     /// Bump for lot PDA seed
     pub bump: u8,
 }

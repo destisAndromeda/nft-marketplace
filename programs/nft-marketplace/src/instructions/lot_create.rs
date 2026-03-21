@@ -11,6 +11,8 @@ pub struct LotCreateArgs {
     pub mint: Pubkey,
  
     pub currency: Pubkey,
+
+    pub price: u64,
 }
 
 #[derive(Accounts)]
@@ -64,7 +66,8 @@ impl<'info> LotCreate<'info> {
         
         lot.mint     = args.mint;
         lot.currency = args.currency;
-        
+        lot.price    = args.price;
+
         lot.bump     = ctx.bumps.lot;
 
         ctx.accounts.marketplace.transaction_index =
