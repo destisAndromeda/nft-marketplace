@@ -16,7 +16,7 @@ pub mod nft_marketplace {
         ProgramConfigInit::program_config_init(ctx, args)
     }
 
-    pub fn program_config_update(ctx: Context<ProgramConfig>, args: ProgramConfigUpdateArgs) -> Result<()> {
+    pub fn program_config_update(ctx: Context<ProgramConfigUpdate>, args: ProgramConfigUpdateArgs) -> Result<()> {
         ProgramConfigUpdate::program_config_update(ctx, args)
     }
 }
