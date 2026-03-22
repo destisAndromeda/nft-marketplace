@@ -50,6 +50,13 @@ pub struct PlaceLot<'info> {
 
 impl<'info> PlaceLot<'info> {
     pub fn place_lot(ctx: Context<Self>, args: PlaceLotArgs) -> Result<()> {
+        // let lot = &mut ctx.accounts.lot;
+
+        // require!(
+        //     lot.status,
+        //     LotStatus::Created,
+        //     CustomError::
+        // );
 
         Ok(())
     }

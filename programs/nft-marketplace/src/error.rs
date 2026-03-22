@@ -6,4 +6,11 @@ pub enum CustomError {
     Unauthorized,
     #[msg("Overflow")]
     Overflow,
+    #[msg("LotIsPlaced")]
+    LotIsPlaced,
+    #[msg("Cancelled By Owner")]
+    CancelledByOwner,
+    #[msg("Cancelled By Marketplace")]
+    CancelledByMarketplace,
+
 }
