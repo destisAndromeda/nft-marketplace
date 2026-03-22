@@ -49,14 +49,21 @@ pub struct PlaceLot<'info> {
 }
 
 impl<'info> PlaceLot<'info> {
+    fn validate(&self) -> Result<()> {
+
+        Ok(())
+    }    
+
+    #[access_control(ctx.accounts.validate())]
     pub fn place_lot(ctx: Context<Self>, args: PlaceLotArgs) -> Result<()> {
         // let lot = &mut ctx.accounts.lot;
 
         // require!(
         //     lot.status,
         //     LotStatus::Created,
-        //     CustomError::
+        //     CustomError::LotIsPlaced
         // );
+
 
         Ok(())
     }
