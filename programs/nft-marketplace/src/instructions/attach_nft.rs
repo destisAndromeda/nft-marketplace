@@ -50,7 +50,11 @@ pub struct AttachNft<'info> {
 }
 
 impl<'info> AttachNft<'info> {
+    // @TODO: add check for lot.owner == asset.owner
     pub fn attach_nft(ctx: Context<Self>, args: AttachNftArgs) -> Result<()> {
+        let lot = &mut ctx.accounts.lot;
+
+        lot.asset = args.asset;
 
         Ok(())
     }
