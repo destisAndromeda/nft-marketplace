@@ -61,4 +61,11 @@ pub mod nft_marketplace {
     ) -> Result<()> {
         ChangeLotStatus::make_lot_available_for_sale(ctx, args)
     }
+
+    pub fn attach_nft(
+        ctx: Context<AttachNft>,
+        args: AttachNftArgs,
+    ) -> Result<()> {
+        AttachNft::attach_nft(ctx, args)
+    }
 }
