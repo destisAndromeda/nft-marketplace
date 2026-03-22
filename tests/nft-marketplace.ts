@@ -120,7 +120,7 @@ describe("nft-marketplace", () => {
     await program.methods
       .lotCreate({
         marketplaceIndex: marketplaceIndex,
-        mint: mint,
+        asset: mint,
         currency: currency,
         price: price,
       })
@@ -137,12 +137,60 @@ describe("nft-marketplace", () => {
     const lotAccount = await program.account.lot.fetch(lotPda);
     expect(lotAccount.marketplace.toBase58()).to.equal(marketplacePda.toBase58());
     expect(lotAccount.owner.toBase58()).to.equal(initialAuthority.publicKey.toBase58());
-    expect(lotAccount.mint.toBase58()).to.equal(mint.toBase58());
+    expect(lotAccount.asset.toBase58()).to.equal(mint.toBase58());
     expect(lotAccount.currency.toBase58()).to.equal(currency.toBase58());
     expect(lotAccount.price.toNumber()).to.equal(price.toNumber());
 
     const marketplaceAccountAfter = await program.account.marketplace.fetch(marketplacePda);
     expect(marketplaceAccountAfter.transactionIndex.toNumber()).to.equal(lotTransactionIndex.toNumber() + 1);
+  });
+
+  it("Attaches an NFT to a lot", async () => {
+    const newAsset = anchor.web3.Keypair.generate().publicKey;
+    const marketplaceIndex = new anchor.BN(0);
+    const lotIndex = new anchor.BN(0);
+
+    const programConfigAccount = await program.account.programConfig.fetch(programConfigPda);
+
+    const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("marketplace"),
+        programConfigAccount.marketplaceDeployAuthority.toBuffer(),
+        Buffer.from("marketplace"),
+        marketplaceIndex.toArrayLike(Buffer, "le", 8),
+      ],
+      program.programId
+    );
+
+    const [lotPda] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("marketplace"),
+        marketplacePda.toBuffer(),
+        Buffer.from("transaction"),
+        initialAuthority.publicKey.toBuffer(),
+        Buffer.from("lot"),
+        lotIndex.toArrayLike(Buffer, "le", 8),
+      ],
+      program.programId
+    );
+
+    await program.methods
+      .attachNft({
+        marketplaceIndex: marketplaceIndex,
+        lotIndex: lotIndex,
+        asset: newAsset,
+      })
+      .accounts({
+        owner: initialAuthority.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
+        programConfig: programConfigPda,
+      })
+      .signers([initialAuthority])
+      .rpc();
+
+    const lotAccount = await program.account.lot.fetch(lotPda);
+    expect(lotAccount.asset.toBase58()).to.equal(newAsset.toBase58());
   });
 
   it("Places a lot", async () => {

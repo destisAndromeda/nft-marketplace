@@ -19,6 +19,7 @@ pub struct AttachNft<'info> {
     pub owner: Signer<'info>,
 
     #[account(
+        mut,
         seeds = [
             PROGRAM_PREFIX,
             marketplace.key().as_ref(),
@@ -46,7 +47,7 @@ pub struct AttachNft<'info> {
         seeds = [PROGRAM_PREFIX, PROGRAM_CONFIG],
         bump  = program_config.bump,
     )]
-    program_config: Account<'info, ProgramConfig>,
+    pub program_config: Account<'info, ProgramConfig>,
 }
 
 impl<'info> AttachNft<'info> {
