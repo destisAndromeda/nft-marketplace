@@ -49,29 +49,30 @@ pub struct PlaceLot<'info> {
 }
 
 impl<'info> PlaceLot<'info> {
+    // Allowed transitions: Created -> Placed, AvailableForSale -> Placed
     fn validate(&self) -> Result<()> {
         let Self {
             lot,
             ..
         } = self;
-        
+
         require!(
-            matches!(lot.status, LotStatus::Placed { .. }),
+            !matches!(lot.status, LotStatus::Placed { .. }),
             CustomError::LotIsPlaced,
         );
 
         require!(
-            matches!(lot.status, LotStatus::CancelledByOwner { .. }),
+            !matches!(lot.status, LotStatus::CancelledByOwner { .. }),
             CustomError::CancelledByOwner
         );
 
         require!(
-            matches!(lot.status, LotStatus::CancelledByMarketplace { .. }),
+            !matches!(lot.status, LotStatus::CancelledByMarketplace { .. }),
             CustomError::CancelledByMarketplace,
         );
 
         require!(
-            matches!(lot.status, LotStatus::Sold { .. }),
+            !matches!(lot.status, LotStatus::Sold { .. }),
             CustomError::WasSold,
         );
 
@@ -80,14 +81,11 @@ impl<'info> PlaceLot<'info> {
 
     #[access_control(ctx.accounts.validate())]
     pub fn place_lot(ctx: Context<Self>, args: PlaceLotArgs) -> Result<()> {
-        // let lot = &mut ctx.accounts.lot;
+        let lot = &mut ctx.accounts.lot;
 
-        // require!(
-        //     lot.status,
-        //     LotStatus::Created,
-        //     CustomError::LotIsPlaced
-        // );
-
+        lot.status = LotStatus::Placed {
+            timestamp: Clock::get()?.unix_timestamp,
+        };
 
         Ok(())
     }
