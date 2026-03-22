@@ -47,4 +47,11 @@ pub mod nft_marketplace {
     ) -> Result<()> {
         LotCreate::lot_create(ctx, args)
     }
+
+    pub fn place_lot(
+        ctx: Context<PlaceLot>,
+        args: PlaceLotArgs,
+    ) -> Result<()> {
+        PlaceLot::place_lot(ctx, args)
+    }
 }
