@@ -49,16 +49,16 @@ pub mod nft_marketplace {
     }
 
     pub fn place_lot(
-        ctx: Context<PlaceLot>,
-        args: PlaceLotArgs,
+        ctx: Context<ChangeLotStatus>,
+        args: ChangeLotStatusArgs,
     ) -> Result<()> {
-        PlaceLot::place_lot(ctx, args)
+        ChangeLotStatus::place_lot(ctx, args)
     }
 
     pub fn make_lot_available_for_sale(
-        ctx: Context<MakeLotAvailableForSale>,
-        args: MakeLotAvailableForSaleArgs,
+        ctx: Context<ChangeLotStatus>,
+        args: ChangeLotStatusArgs,
     ) -> Result<()> {
-        MakeLotAvailableForSale::make_lot_available_for_sale(ctx, args)
+        ChangeLotStatus::make_lot_available_for_sale(ctx, args)
     }
 }
