@@ -8,7 +8,7 @@ pub struct Lot {
     /// NFT Owner
     pub owner: Pubkey,
     /// NFT mint account
-    pub mint: Pubkey,
+    pub asset: Pubkey,
     /// Current NFT price
     pub currency: Pubkey,
     /// NFT price in lamports

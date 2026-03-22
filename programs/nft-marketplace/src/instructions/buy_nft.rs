@@ -1,5 +1,9 @@
 use anchor_lang::prelude::*;
-use mpl_core::instructions::TransferV1CpiBuilder;
+// use mpl_core::{ 
+//     self,
+//     accounts::BaseAssetV1,
+//     instructions::TransferV1CpiBuilder,
+// };
 
 use crate::state::*;
 use crate::seeds::*;
@@ -17,24 +21,24 @@ pub struct BuyNftArgs {
 #[derive(Accounts)]
 #[instruction(args: BuyNftArgs)]
 pub struct BufNft<'info> {
-    #[account(mut)]
+    // #[account(mut)]
     pub buyer: Signer<'info>,
 
-    #[account(
-        init,
-        payer = buyer,
-        space = 8 + Lot::INIT_SPACE,
-        seeds = [
-            PROGRAM_PREFIX,
-            marketplace.key().as_ref(),
-            TRANSACTION,
-            buyer.key().as_ref(),
-            LOT,
-            &marketplace.transaction_index.to_le_bytes(),
-        ],
-        bump,
-    )]
-    pub new_lot: Account<'info, Lot>,
+    // #[account(
+    //     init,
+    //     payer = buyer,
+    //     space = 8 + Lot::INIT_SPACE,
+    //     seeds = [
+    //         PROGRAM_PREFIX,
+    //         marketplace.key().as_ref(),
+    //         TRANSACTION,
+    //         buyer.key().as_ref(),
+    //         LOT,
+    //         &marketplace.transaction_index.to_le_bytes(),
+    //     ],
+    //     bump,
+    // )]
+    // pub new_lot: Account<'info, Lot>,
 
     #[account(
         mut,
@@ -67,7 +71,11 @@ pub struct BufNft<'info> {
     )]
     pub program_config: Account<'info, ProgramConfig>,
 
-    pub system_program: Program<'info, System>,
+    //// CHECK: mpl_core program
+    // #[account(address = mpl_core::ID)]
+    // pub core_program: UncheckedAccount<'info>,
+
+    // pub system_program: Program<'info, System>,
 }
 
 impl<'info> BufNft<'info> {
