@@ -70,9 +70,9 @@ pub struct BufNft<'info> {
     pub system_program: Program<'info, System>,
 }
 
-// impl<'info> BufNft<'info> {
-//     pub buy_nft() -> Result<()> {
+impl<'info> BufNft<'info> {
+    pub fn buy_nft(ctx: Context<Self>, args: BuyNftArgs) -> Result<()> {
 
-//         Ok(())
-//     }
-// }
+        Ok(())
+    }
+}
