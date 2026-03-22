@@ -4,7 +4,8 @@ pub mod marketplace_create;
 pub mod marketplace_fee_percentage_update;
 pub mod lot_create;
 pub mod change_lot_status;
-pub mod buy_nft;
+// pub mod buy_nft;
+pub mod attach_nft;
 
 pub use program_config_init::*;
 pub use program_config_update::*;
@@ -12,4 +13,5 @@ pub use marketplace_create::*;
 pub use marketplace_fee_percentage_update::*;
 pub use lot_create::*;
 pub use change_lot_status::*;
-pub use buy_nft::*;
+// pub use buy_nft::*;
+pub use attach_nft::*;
