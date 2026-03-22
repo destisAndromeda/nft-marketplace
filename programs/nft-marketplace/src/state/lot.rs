@@ -13,6 +13,8 @@ pub struct Lot {
     pub currency: Pubkey,
     /// NFT price in lamports
     pub price: u64,
+    /// Lot status in the Marketplace
+    pub status: LotStatus,
     /// Bump for lot PDA seed
     pub bump: u8,
 }
@@ -27,6 +29,8 @@ pub struct Lot {
     InitSpace,
 )] // Maybe copy not required
 pub enum LotStatus {
+    /// Lot was created but got neutral status
+    Created                { timestamp: i64 },
     /// Lot was deployed on Marketplace
     Placed                 { timestamp: i64 },
     /// NFT is available for sale
