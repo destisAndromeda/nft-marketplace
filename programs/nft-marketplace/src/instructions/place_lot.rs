@@ -81,7 +81,7 @@ impl<'info> PlaceLot<'info> {
     }    
 
     #[access_control(ctx.accounts.validate())]
-    pub fn place_lot(ctx: Context<Self>, args: PlaceLotArgs) -> Result<()> {
+    pub fn place_lot(ctx: Context<Self>, _args: PlaceLotArgs) -> Result<()> {
         let lot = &mut ctx.accounts.lot;
 
         lot.status = LotStatus::Placed {

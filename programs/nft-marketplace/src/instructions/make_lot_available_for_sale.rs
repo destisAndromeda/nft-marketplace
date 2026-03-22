@@ -67,7 +67,7 @@ impl<'info> MakeLotAvailableForSale<'info> {
 	#[access_control(ctx.accounts.validate())]
 	pub fn make_lot_available_for_sale(
 		ctx: Context<Self>,
-		args: MakeLotAvailableForSale,
+		_args: MakeLotAvailableForSaleArgs,
 	) -> Result<()> {
 		let lot = &mut ctx.accounts.lot;
 
