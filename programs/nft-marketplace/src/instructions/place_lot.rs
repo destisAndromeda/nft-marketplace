@@ -18,7 +18,8 @@ pub struct PlaceLot<'info> {
 
     #[account(
         mut,
-        seeds = [
+        has_one = owner,
+        seeds   = [
             PROGRAM_PREFIX,
             marketplace.key().as_ref(),
             TRANSACTION,
