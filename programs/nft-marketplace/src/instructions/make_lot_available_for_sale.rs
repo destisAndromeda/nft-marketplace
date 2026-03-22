@@ -50,6 +50,12 @@ pub struct MakeLotAvailableForSale<'info> {
 }
 
 impl<'info> MakeLotAvailableForSale<'info> {
+	fn validate(&self) -> Result<()> {
+
+		Ok(())
+	}
+
+	#[access_control(ctx.accounts.validate())]
 	pub fn make_lot_available_for_sale(
 		ctx: Context<Self>,
 		args: MakeLotAvailableForSale,
