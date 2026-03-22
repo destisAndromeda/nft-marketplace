@@ -48,3 +48,14 @@ pub struct MakeLotAvailableForSale<'info> {
 	)]
 	pub program_config: Account<'info, ProgramConfig>,
 }
+
+impl<'info> MakeLotAvailableForSale<'info> {
+	pub fn make_lot_available_for_sale(
+		ctx: Context<Self>,
+		args: MakeLotAvailableForSale,
+	) -> Result<()> {
+
+
+		Ok(())
+	}
+}
