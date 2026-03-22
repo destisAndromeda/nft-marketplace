@@ -48,9 +48,9 @@ pub struct PlaceLot<'info> {
     pub program_config: Account<'info, ProgramConfig>,
 }
 
-// impl<'info> PlaceLot<'info> {
-//     pub fn place_lot(ctx: Context<Self>, args: PlaceLotArgs) -> Result<()> {
+impl<'info> PlaceLot<'info> {
+    pub fn place_lot(ctx: Context<Self>, args: PlaceLotArgs) -> Result<()> {
 
-//         Ok(())
-//     }
-// }
+        Ok(())
+    }
+}
