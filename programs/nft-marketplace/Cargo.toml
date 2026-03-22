@@ -23,7 +23,7 @@ testing = []
 
 [dependencies]
 anchor-lang = "0.32.1"
-
+mpl-core = "0.7.2"
 
 [lints.rust]
 unexpected_cfgs = { level = "warn", check-cfg = ['cfg(target_os, values("solana"))'] }
