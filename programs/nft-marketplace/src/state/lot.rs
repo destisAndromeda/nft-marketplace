@@ -16,3 +16,25 @@ pub struct Lot {
     /// Bump for lot PDA seed
     pub bump: u8,
 }
+
+#[derive(
+    AnchorSerialize,
+    AnchorDeserialize,
+    Clone,
+    Copy,
+    PartialEq,
+    Eq,
+    InitSpace,
+)] // Maybe copy not required
+pub enum LotStatus {
+    /// Lot was deployed on Marketplace
+    Placed                 { timestamp: i64 },
+    /// NFT is available for sale
+    AvailableForSale       { timestamp: i64 },
+    /// NFT was sold
+    Sold                   { timestamp: i64 },
+    /// Lot was cancelled by NFT owner
+    CancelledByOwner       { timestamp: i64 },
+    /// Lot was cancelled by Marketplace
+    CancelledByMarketplace { timestamp: i64 },
+}
