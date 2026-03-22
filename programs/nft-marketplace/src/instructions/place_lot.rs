@@ -50,6 +50,30 @@ pub struct PlaceLot<'info> {
 
 impl<'info> PlaceLot<'info> {
     fn validate(&self) -> Result<()> {
+        let Self {
+            lot,
+            ..
+        } = self;
+        
+        require!(
+            matches!(lot.status, LotStatus::Placed { .. }),
+            CustomError::LotIsPlaced,
+        );
+
+        require!(
+            matches!(lot.status, LotStatus::CancelledByOwner { .. }),
+            CustomError::CancelledByOwner
+        );
+
+        require!(
+            matches!(lot.status, LotStatus::CancelledByMarketplace { .. }),
+            CustomError::CancelledByMarketplace,
+        );
+
+        require!(
+            matches!(lot.status, LotStatus::Sold { .. }),
+            CustomError::WasSold,
+        );
 
         Ok(())
     }    
