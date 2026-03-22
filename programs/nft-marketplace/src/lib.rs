@@ -55,7 +55,7 @@ pub mod nft_marketplace {
         PlaceLot::place_lot(ctx, args)
     }
 
-    pub fn make_lot_availabel_for_sale(
+    pub fn make_lot_available_for_sale(
         ctx: Context<MakeLotAvailableForSale>,
         args: MakeLotAvailableForSaleArgs,
     ) -> Result<()> {
