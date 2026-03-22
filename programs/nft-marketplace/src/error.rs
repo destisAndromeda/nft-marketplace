@@ -14,4 +14,6 @@ pub enum CustomError {
     CancelledByMarketplace,
     #[msg("Was Sold")]
     WasSold,
+    #[msg("Unavailable For Sale")]
+    UnavailableForSale,
 }

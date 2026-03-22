@@ -51,6 +51,15 @@ pub struct MakeLotAvailableForSale<'info> {
 
 impl<'info> MakeLotAvailableForSale<'info> {
 	fn validate(&self) -> Result<()> {
+		let Self {
+			lot,
+			..
+		} = self;
+
+		require!(
+			matches!(lot.status, LotStatus::Placed { .. }),
+			CustomError::UnavailableForSale,
+		);
 
 		Ok(())
 	}
