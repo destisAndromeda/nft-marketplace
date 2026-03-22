@@ -9,6 +9,8 @@ pub struct AttachNftArgs {
     pub marketplace_index: u64,
 
     pub lot_index: u64,
+
+    pub asset: Pubkey
 }
 
 #[derive(Accounts)]
@@ -45,4 +47,11 @@ pub struct AttachNft<'info> {
         bump  = program_config.bump,
     )]
     program_config: Account<'info, ProgramConfig>,
+}
+
+impl<'info> AttachNft<'info> {
+    pub fn attach_nft(ctx: Context<Self>, args: AttachNftArgs) -> Result<()> {
+
+        Ok(())
+    }
 }
