@@ -69,7 +69,11 @@ impl<'info> MakeLotAvailableForSale<'info> {
 		ctx: Context<Self>,
 		args: MakeLotAvailableForSale,
 	) -> Result<()> {
+		let lot = &mut ctx.accounts.lot;
 
+		lot.status = LotStatus::AvailableForSale {
+			timestamp: Clock::get()?.unix_timestamp,
+		};
 
 		Ok(())
 	}
