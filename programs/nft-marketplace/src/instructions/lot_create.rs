@@ -62,18 +62,18 @@ impl<'info> LotCreate<'info> {
     pub fn lot_create(ctx: Context<Self>, args: LotCreateArgs) -> Result<()> {
         let lot = &mut ctx.accounts.lot;
 
-        lot.status   = LotStatus::Created {
+        lot.status = LotStatus::Created {
             timestamp: Clock::get()?.unix_timestamp,
         };
 
         lot.marketplace = ctx.accounts.marketplace.key();
-        lot.owner    = ctx.accounts.owner.key();
+        lot.owner = ctx.accounts.owner.key();
         
-        lot.asset     = args.asset;
+        lot.asset = args.asset;
         lot.currency = args.currency;
-        lot.price    = args.price;
+        lot.price = args.price;
 
-        lot.bump     = ctx.bumps.lot;
+        lot.bump = ctx.bumps.lot;
 
         ctx.accounts.marketplace.transaction_index =
         ctx.accounts.marketplace.transaction_index.checked_add(1).ok_or(

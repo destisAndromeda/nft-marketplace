@@ -79,6 +79,11 @@ pub struct BufNft<'info> {
 }
 
 impl<'info> BufNft<'info> {
+    fn validate(&self) -> Result<()> {
+        Ok(())
+    }
+
+    #[access_control(ctx.accounts.validate())]
     pub fn buy_nft(ctx: Context<Self>, args: BuyNftArgs) -> Result<()> {
 
         Ok(())
