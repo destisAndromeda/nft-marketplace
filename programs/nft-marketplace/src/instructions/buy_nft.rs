@@ -1,13 +1,13 @@
 use anchor_lang::prelude::*;
-// use mpl_core::{ 
-//     self,
-//     accounts::BaseAssetV1,
-//     instructions::TransferV1CpiBuilder,
-// };
+use mpl_core::{ 
+    self,
+    accounts::BaseAssetV1,
+    instructions::TransferV1CpiBuilder,
+};
 
 use crate::state::*;
 use crate::seeds::*;
-// use crate::error::*;
+use crate::error::*;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct BuyNftArgs {
@@ -80,11 +80,27 @@ pub struct BufNft<'info> {
 
 impl<'info> BufNft<'info> {
     fn validate(&self) -> Result<()> {
+        let Self {
+            lot,
+            ..
+        } = self;
+
+        require!(
+            matches!(lot.status, LotStatus::AvailableForSale { .. }),
+            CustomError::UnavailableForSale,
+        );
+
         Ok(())
     }
 
     #[access_control(ctx.accounts.validate())]
-    pub fn buy_nft(ctx: Context<Self>, args: BuyNftArgs) -> Result<()> {
+    pub fn buy_nft(ctx: Context<Self>, _args: BuyNftArgs) -> Result<()> {
+        let lot = &mut ctx.accounts.lot;
+        lot.status = LotStatus::Sold {
+            timestamp: Clock::get()?.unix_timestamp,
+        };
+
+
 
         Ok(())
     }
