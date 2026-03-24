@@ -48,4 +48,10 @@ pub struct ListNft<'info> {
 	pub program_config: Account<'info, ProgramConfig>,
 }
 
-// impl<'info> ListNft<'info> {}
+impl<'info> ListNft<'info> {
+	pub fn list_nft() -> Result<()> {
+
+
+		Ok(())
+	}
+}
