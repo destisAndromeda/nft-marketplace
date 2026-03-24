@@ -20,6 +20,7 @@ pub struct ListNftArgs {
 #[derive(Accounts)]
 #[instruction(args: ListNftArgs)]
 pub struct ListNft<'info> {
+    #[account(mut)]
     pub owner: Signer<'info>,
 
     #[account(
@@ -74,7 +75,7 @@ impl<'info> ListNft<'info> {
         } = self;
 
         require!(
-            lot.is_listed,
+            !lot.is_listed,
             CustomError::AlreadyListed,
         );
 

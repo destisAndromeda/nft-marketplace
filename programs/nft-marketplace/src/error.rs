@@ -18,4 +18,6 @@ pub enum CustomError {
     UnavailableForSale,
     #[msg("Already Listed")]
     AlreadyListed,
+    #[msg("Not Yet Listed")]
+    NotYetListed,
 }

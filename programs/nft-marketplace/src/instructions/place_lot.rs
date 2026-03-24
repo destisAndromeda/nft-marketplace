@@ -58,6 +58,11 @@ impl<'info> PlaceLot<'info> {
         } = self;
 
         require!(
+            lot.is_listed,
+            CustomError::NotYetListe,
+        );
+
+        require!(
             !matches!(lot.status, LotStatus::Placed { .. }),
             CustomError::LotIsPlaced,
         );

@@ -21,8 +21,8 @@ pub struct BuyNftArgs {
 
 #[derive(Accounts)]
 #[instruction(args: BuyNftArgs)]
-pub struct BufNft<'info> {
-    // #[account(mut)]
+pub struct BuyNft<'info> {
+    #[account(mut)]
     pub buyer: Signer<'info>,
 
     // #[account(
@@ -79,7 +79,7 @@ pub struct BufNft<'info> {
     // pub system_program: Program<'info, System>,
 }
 
-impl<'info> BufNft<'info> {
+impl<'info> BuyNft<'info> {
     fn validate(&self) -> Result<()> {
         let Self {
             lot,

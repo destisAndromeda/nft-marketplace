@@ -193,6 +193,81 @@ describe("nft-marketplace", () => {
     expect(lotAccount.asset.toBase58()).to.equal(newAsset.toBase58());
   });
 
+  // it("Lists an NFT", async () => {
+  //   const marketplaceIndex = new anchor.BN(0);
+  //   const salesperson = anchor.web3.Keypair.generate().publicKey;
+  //   const asset = anchor.web3.Keypair.generate(); // Mock asset
+  //   const currency = anchor.web3.Keypair.generate().publicKey;
+  //   const price = new anchor.BN(1000000);
+
+  //   const programConfigAccount = await program.account.programConfig.fetch(programConfigPda);
+
+  //   const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
+  //     [
+  //       Buffer.from("marketplace"),
+  //       programConfigAccount.marketplaceDeployAuthority.toBuffer(),
+  //       Buffer.from("marketplace"),
+  //       marketplaceIndex.toArrayLike(Buffer, "le", 8),
+  //     ],
+  //     program.programId
+  //   );
+    
+  //   const marketplaceAccount = await program.account.marketplace.fetch(marketplacePda);
+  //   const lotIndex = marketplaceAccount.transactionIndex;
+
+  //   const [lotPda] = anchor.web3.PublicKey.findProgramAddressSync(
+  //     [
+  //       Buffer.from("marketplace"),
+  //       marketplacePda.toBuffer(),
+  //       Buffer.from("transaction"),
+  //       initialAuthority.publicKey.toBuffer(),
+  //       Buffer.from("lot"),
+  //       lotIndex.toArrayLike(Buffer, "le", 8),
+  //     ],
+  //     program.programId
+  //   );
+
+  //   // Create the lot first
+  //   await program.methods
+  //     .lotCreate({
+  //       marketplaceIndex: marketplaceIndex,
+  //       asset: asset.publicKey,
+  //       currency: currency,
+  //       price: price,
+  //     })
+  //     .accounts({
+  //       owner: initialAuthority.publicKey,
+  //       lot: lotPda,
+  //       marketplace: marketplacePda,
+  //       programConfig: programConfigPda,
+  //       systemProgram: anchor.web3.SystemProgram.programId,
+  //     })
+  //     .signers([initialAuthority])
+  //     .rpc();
+
+  //   // Now list the NFT
+  //   await program.methods
+  //     .listNft({
+  //       marketplaceIndex: marketplaceIndex,
+  //       lotIndex: lotIndex,
+  //       salesperson: salesperson,
+  //     })
+  //     .accounts({
+  //       owner: initialAuthority.publicKey,
+  //       lot: lotPda,
+  //       marketplace: marketplacePda,
+  //       programConfig: programConfigPda,
+  //       systemProgram: anchor.web3.SystemProgram.programId,
+  //       asset: asset.publicKey,
+  //       coreProgram: new anchor.web3.PublicKey("CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"),
+  //     })
+  //     .signers([initialAuthority])
+  //     .rpc();
+
+  //   const lotAccount = await program.account.lot.fetch(lotPda);
+  //   expect(lotAccount.isListed).to.be.true;
+  // });
+
   it("Places a lot", async () => {
     const marketplaceIndex = new anchor.BN(0);
     const lotIndex = new anchor.BN(0); // The lot created in the previous test had index 0

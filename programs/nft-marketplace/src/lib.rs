@@ -68,4 +68,18 @@ pub mod nft_marketplace {
     ) -> Result<()> {
         AttachNft::attach_nft(ctx, args)
     }
+
+    // pub fn buy_nft(
+    //     ctx: Context<BuyNft>,
+    //     args: BuyNftArgs,
+    // ) -> Result<()> {
+    //     BuyNft::buy_nft(ctx, args)
+    // }
+
+    pub fn list_nft(
+        ctx: Context<ListNft>,
+        args: ListNftArgs,
+    ) -> Result<()> {
+        ListNft::list_nft(ctx, args)
+    }
 }

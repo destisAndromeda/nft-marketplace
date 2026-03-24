@@ -57,6 +57,11 @@ impl<'info> MakeLotAvailableForSale<'info> {
         } = self;
 
         require!(
+            lot.is_listed,
+            CustomError::NotYetListed,
+        );
+
+        require!(
             matches!(lot.status, LotStatus::Placed { .. }),
             CustomError::UnavailableForSale,
         );
