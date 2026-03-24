@@ -72,9 +72,10 @@ impl<'info> ListNft<'info> {
             ..
         } = self;
 
-        // require!(
-        //     lot.is_listed,
-        // );
+        require!(
+            lot.is_listed,
+            CustomError::AlreadyListed,
+        );
 
         require!(
             matches!(lot.status, LotStatus::Created { .. }),

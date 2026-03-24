@@ -16,4 +16,6 @@ pub enum CustomError {
     WasSold,
     #[msg("Unavailable For Sale")]
     UnavailableForSale,
+    #[msg("Already Listed")]
+    AlreadyListed,
 }
