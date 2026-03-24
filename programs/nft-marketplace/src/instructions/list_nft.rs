@@ -88,23 +88,7 @@ impl<'info> ListNft<'info> {
 
     #[access_control(ctx.accounts.validate())]
     pub fn list_nft(ctx: Context<Self>, args: ListNftArgs) -> Result<()> {
-        let lot = &mut ctx.accounts.lot;
-        lot.is_listed = true;
-
-        let marketplace_key = &ctx.accounts.marketplace.key();
-        let salesperson_key = args.salesperson;
-        let lot_index_bytes = args.lot_index.to_le_bytes();
-        let lot_bump        = ctx.accounts.lot.bump;
-
-        let lot_seeds: &[&[u8]] = &[
-            PROGRAM_PREFIX,
-            marketplace_key.as_ref(),
-            TRANSACTION,
-            salesperson_key.as_ref(),
-            LOT,
-            &lot_index_bytes,
-            &[lot_bump],
-        ];
+        ctx.accounts.lot.is_listed = true;
 
         let list = &ctx.accounts;
 
@@ -114,7 +98,7 @@ impl<'info> ListNft<'info> {
             .authority(Some(&list.owner.to_account_info()))
             .new_owner(&list.lot.to_account_info())
             .system_program(Some(&list.system_program.to_account_info()))
-            .invoke_signed(&[lot_seeds])?;
+            .invoke()?;
 
         Ok(())
     }
