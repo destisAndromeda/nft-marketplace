@@ -105,14 +105,14 @@ impl<'info> ListNft<'info> {
             &[lot_bump],
         ];
 
-        let accounts_list = &ctx.accounts;
+        let list = &ctx.accounts;
 
-        TransferV1CpiBuilder::new(&ctx.accounts.core_program.to_account_info())
-            .asset(&accounts_list.asset.to_account_info())
-            .payer(&accounts_list.owner.to_account_info())
-            .authority(Some(&accounts_list.owner.to_account_info()))
-            .new_owner(&accounts_list.lot.to_account_info())
-            .system_program(Some(&accounts_list.system_program.to_account_info()))
+        TransferV1CpiBuilder::new(&list.core_program.to_account_info())
+            .asset(&list.asset.to_account_info())
+            .payer(&list.owner.to_account_info())
+            .authority(Some(&list.owner.to_account_info()))
+            .new_owner(&list.lot.to_account_info())
+            .system_program(Some(&list.system_program.to_account_info()))
             .invoke_signed(&[lot_seeds])?;
 
         Ok(())
