@@ -88,7 +88,7 @@ impl<'info> ListNft<'info> {
     }
 
     #[access_control(ctx.accounts.validate())]
-    pub fn list_nft(ctx: Context<Self>, args: ListNftArgs) -> Result<()> {
+    pub fn list_nft(ctx: Context<Self>, _args: ListNftArgs) -> Result<()> {
         ctx.accounts.lot.is_listed = true;
 
         let list = &ctx.accounts;

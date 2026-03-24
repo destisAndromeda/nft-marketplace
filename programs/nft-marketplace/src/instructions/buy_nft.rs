@@ -1,7 +1,6 @@
 use anchor_lang::prelude::*;
 use mpl_core::{ 
-    self,
-    accounts::BaseAssetV1,
+    // self,
     instructions::TransferV1CpiBuilder,
     programs,
 };
