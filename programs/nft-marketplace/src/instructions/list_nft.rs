@@ -49,7 +49,13 @@ pub struct ListNft<'info> {
 }
 
 impl<'info> ListNft<'info> {
-	pub fn list_nft() -> Result<()> {
+	fn validate() -> Result<()> {
+
+		Ok(())
+	}
+
+
+	pub fn list_nft(ctx: Context<Self>, args: ListNftArgs) -> Result<()> {
 
 
 		Ok(())
