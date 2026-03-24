@@ -73,6 +73,8 @@ impl<'info> LotCreate<'info> {
         lot.currency = args.currency;
         lot.price = args.price;
 
+        lot.is_listed = false;
+
         lot.bump = ctx.bumps.lot;
 
         ctx.accounts.marketplace.transaction_index =

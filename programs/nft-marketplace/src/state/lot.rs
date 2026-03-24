@@ -15,8 +15,8 @@ pub struct Lot {
     pub price: u64,
     /// Lot status in the Marketplace
     pub status: LotStatus,
-
-    // @TODO: add is_listed field, for ownership control
+    /// Need for Token and lot connection
+    pub is_listed: bool,
     /// Bump for lot PDA seed
     pub bump: u8,
 }
