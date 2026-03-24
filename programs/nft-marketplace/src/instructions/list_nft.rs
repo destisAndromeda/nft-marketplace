@@ -85,7 +85,11 @@ impl<'info> ListNft<'info> {
         Ok(())
     }
 
+    #[access_control(ctx.accounts.validate())]
     pub fn list_nft(ctx: Context<Self>, args: ListNftArgs) -> Result<()> {
+        let lot = &mut ctx.accounts.lot;
+        lot.is_listed = true;
+
         let marketplace_key = &ctx.accounts.marketplace.key();
         let salesperson_key = args.salesperson;
         let lot_index_bytes = args.lot_index.to_le_bytes();
