@@ -29,8 +29,9 @@ pub struct ListNft<'info> {
             PROGRAM_PREFIX,
             marketplace.key().as_ref(),
             TRANSACTION,
-            &args.lot_index.to_le_bytes(),
+            owner.key().as_ref(),
             LOT,
+            &args.lot_index.to_le_bytes(),
         ],
         bump  = lot.bump,
     )]
