@@ -192,7 +192,7 @@ describe("nft-marketplace", () => {
     const lotAccount = await program.account.lot.fetch(lotPda);
     expect(lotAccount.asset.toBase58()).to.equal(newAsset.toBase58());
   });
-
+  // list_nft and buy_nft require the Metaplex Core program to be present in the environment for the CPIs to succeed.
   // it("Lists an NFT", async () => {
   //   const marketplaceIndex = new anchor.BN(0);
   //   const salesperson = anchor.web3.Keypair.generate().publicKey;
@@ -211,7 +211,7 @@ describe("nft-marketplace", () => {
   //     ],
   //     program.programId
   //   );
-    
+
   //   const marketplaceAccount = await program.account.marketplace.fetch(marketplacePda);
   //   const lotIndex = marketplaceAccount.transactionIndex;
 
@@ -273,7 +273,7 @@ describe("nft-marketplace", () => {
     const lotIndex = new anchor.BN(0); // The lot created in the previous test had index 0
 
     const programConfigAccount = await program.account.programConfig.fetch(programConfigPda);
-    
+
     const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
       [
         Buffer.from("marketplace"),
@@ -316,7 +316,7 @@ describe("nft-marketplace", () => {
 
   it("Makes a lot available for sale", async () => {
     const marketplaceIndex = new anchor.BN(0);
-    const lotIndex         = new anchor.BN(0);
+    const lotIndex = new anchor.BN(0);
 
     const programConfigAccount = await program.account.programConfig.fetch(programConfigPda);
 
@@ -345,12 +345,12 @@ describe("nft-marketplace", () => {
     await program.methods
       .makeLotAvailableForSale({
         marketplaceIndex: marketplaceIndex,
-        lotIndex:         lotIndex,
+        lotIndex: lotIndex,
       })
       .accounts({
-        owner:         initialAuthority.publicKey,
-        lot:           lotPda,
-        marketplace:   marketplacePda,
+        owner: initialAuthority.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
         programConfig: programConfigPda,
       })
       .signers([initialAuthority])
@@ -359,10 +359,71 @@ describe("nft-marketplace", () => {
     const lotAccount = await program.account.lot.fetch(lotPda);
     expect(lotAccount.status).to.have.property("availableForSale");
   });
+  //  list_nft and buy_nft require the Metaplex Core program to be present in the environment for the CPIs to succeed.
+  // it("Buys an NFT", async () => {
+  //   const marketplaceIndex = new anchor.BN(0);
+  //   const salesperson = initialAuthority;
+  //   const lotIndex = new anchor.BN(0);
+  //   const buyer = anchor.web3.Keypair.generate();
+
+  //   // Airdrop SOL to buyer
+  //   const signature = await provider.connection.requestAirdrop(
+  //     buyer.publicKey,
+  //     2 * anchor.web3.LAMPORTS_PER_SOL
+  //   );
+  //   await provider.connection.confirmTransaction(signature);
+
+  //   const programConfigAccount = await program.account.programConfig.fetch(programConfigPda);
+
+  //   const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
+  //     [
+  //       Buffer.from("marketplace"),
+  //       programConfigAccount.marketplaceDeployAuthority.toBuffer(),
+  //       Buffer.from("marketplace"),
+  //       marketplaceIndex.toArrayLike(Buffer, "le", 8),
+  //     ],
+  //     program.programId
+  //   );
+
+  //   const [lotPda] = anchor.web3.PublicKey.findProgramAddressSync(
+  //     [
+  //       Buffer.from("marketplace"),
+  //       marketplacePda.toBuffer(),
+  //       Buffer.from("transaction"),
+  //       salesperson.publicKey.toBuffer(),
+  //       Buffer.from("lot"),
+  //       lotIndex.toArrayLike(Buffer, "le", 8),
+  //     ],
+  //     program.programId
+  //   );
+
+  //   const lotAccountBefore = await program.account.lot.fetch(lotPda);
+
+  //   await program.methods
+  //     .buyNft({
+  //       marketplaceIndex: marketplaceIndex,
+  //       lotIndex: lotIndex,
+  //       salesperson: salesperson.publicKey,
+  //     })
+  //     .accounts({
+  //       buyer: buyer.publicKey,
+  //       lot: lotPda,
+  //       marketplace: marketplacePda,
+  //       programConfig: programConfigPda,
+  //       asset: lotAccountBefore.asset,
+  //       coreProgram: new anchor.web3.PublicKey("CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"),
+  //       systemProgram: anchor.web3.SystemProgram.programId,
+  //     })
+  //     .signers([buyer])
+  //     .rpc();
+
+  //   const lotAccountAfter = await program.account.lot.fetch(lotPda);
+  //   expect(lotAccountAfter.status).to.have.property("sold");
+  // });
 
   it("Updates marketplace fee percentage", async () => {
     const newFee = new anchor.BN(1000); // 10%
-    const marketplaceIndex = new anchor.BN(0); 
+    const marketplaceIndex = new anchor.BN(0);
 
     const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
       [
@@ -435,7 +496,7 @@ describe("nft-marketplace", () => {
 
   it("Fails when updated by non-authority", async () => {
     const maliciousActor = anchor.web3.Keypair.generate();
-    
+
     try {
       await program.methods
         .programConfigUpdate({
@@ -476,4 +537,5 @@ describe("nft-marketplace", () => {
     const programConfigAccount = await program.account.programConfig.fetch(programConfigPda);
     expect(programConfigAccount.authority.toBase58()).to.equal(newAuthority.publicKey.toBase58());
   });
+
 });

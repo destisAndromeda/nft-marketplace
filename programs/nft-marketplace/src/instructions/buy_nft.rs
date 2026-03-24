@@ -56,7 +56,7 @@ pub struct BuyNft<'info> {
     pub program_config: Account<'info, ProgramConfig>,
 
     /// CHECK: Account of asset that containing inside the lot 
-    #[account(mut, address = programs::MPL_CORE_ID)]
+    #[account(mut, address = lot.asset)]
     pub asset: UncheckedAccount<'info>,
 
     /// CHECK: mpl_core program
