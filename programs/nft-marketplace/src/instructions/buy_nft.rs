@@ -3,6 +3,7 @@ use mpl_core::{
     self,
     accounts::BaseAssetV1,
     instructions::TransferV1CpiBuilder,
+    programs,
 };
 
 use crate::state::*;
@@ -71,9 +72,9 @@ pub struct BufNft<'info> {
     )]
     pub program_config: Account<'info, ProgramConfig>,
 
-    //// CHECK: mpl_core program
-    // #[account(address = mpl_core::ID)]
-    // pub core_program: UncheckedAccount<'info>,
+    /// CHECK: mpl_core program
+    #[account(address = programs::MPL_CORE_ID)]
+    pub core_program: UncheckedAccount<'info>,
 
     // pub system_program: Program<'info, System>,
 }
@@ -100,7 +101,12 @@ impl<'info> BufNft<'info> {
             timestamp: Clock::get()?.unix_timestamp,
         };
 
-
+        // TransferV1CpiBuilder::new(ctx.accounts.core_proram.to_account_info())
+        //     .asset(lot.asset.key().to_account_info)
+        //     // .collection(None)
+        //     .payer(ctx.accounts.buyer.key().to_account_info())
+        //     .authority(lot.owner.key().to_account_info())
+            
 
         Ok(())
     }

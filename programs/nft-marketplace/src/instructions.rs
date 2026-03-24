@@ -6,6 +6,7 @@ pub mod lot_create;
 pub mod change_lot_status;
 pub mod buy_nft;
 pub mod attach_nft;
+pub mod list_nft;
 
 pub use program_config_init::*;
 pub use program_config_update::*;
@@ -15,3 +16,4 @@ pub use lot_create::*;
 pub use change_lot_status::*;
 pub use buy_nft::*;
 pub use attach_nft::*;
+pub use list_nft::*;
