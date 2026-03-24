@@ -25,22 +25,6 @@ pub struct BuyNft<'info> {
     #[account(mut)]
     pub buyer: Signer<'info>,
 
-    // #[account(
-    //     init,
-    //     payer = buyer,
-    //     space = 8 + Lot::INIT_SPACE,
-    //     seeds = [
-    //         PROGRAM_PREFIX,
-    //         marketplace.key().as_ref(),
-    //         TRANSACTION,
-    //         buyer.key().as_ref(),
-    //         LOT,
-    //         &marketplace.transaction_index.to_le_bytes(),
-    //     ],
-    //     bump,
-    // )]
-    // pub new_lot: Account<'info, Lot>,
-
     #[account(
         mut,
         seeds = [
@@ -72,11 +56,15 @@ pub struct BuyNft<'info> {
     )]
     pub program_config: Account<'info, ProgramConfig>,
 
+    /// CHECK: Account of asset that containing inside the lot 
+    #[account(mut, address = programs::MPL_CORE_ID)]
+    pub asset: UncheckedAccount<'info>,
+
     /// CHECK: mpl_core program
     #[account(address = programs::MPL_CORE_ID)]
     pub core_program: UncheckedAccount<'info>,
 
-    // pub system_program: Program<'info, System>,
+    pub system_program: Program<'info, System>,
 }
 
 impl<'info> BuyNft<'info> {
@@ -95,18 +83,35 @@ impl<'info> BuyNft<'info> {
     }
 
     #[access_control(ctx.accounts.validate())]
-    pub fn buy_nft(ctx: Context<Self>, _args: BuyNftArgs) -> Result<()> {
-        let lot = &mut ctx.accounts.lot;
-        lot.status = LotStatus::Sold {
+    pub fn buy_nft(ctx: Context<Self>, args: BuyNftArgs) -> Result<()> {
+        ctx.accounts.lot.status = LotStatus::Sold {
             timestamp: Clock::get()?.unix_timestamp,
         };
 
-        // TransferV1CpiBuilder::new(ctx.accounts.core_proram.to_account_info())
-        //     .asset(lot.asset.key().to_account_info)
-        //     // .collection(None)
-        //     .payer(ctx.accounts.buyer.key().to_account_info())
-        //     .authority(lot.owner.key().to_account_info())
-            
+        let marketplace_key = ctx.accounts.marketplace.key();
+        let salesperson_key = args.salesperson.key();
+        let lot_index_bytes = args.lot_index.to_le_bytes();
+        let lot_bump        = ctx.accounts.lot.bump;
+
+        let lot_seeds: &[&[u8]] = &[
+            PROGRAM_PREFIX,
+            marketplace_key.as_ref(),
+            TRANSACTION,
+            salesperson_key.as_ref(),
+            LOT,
+            &lot_index_bytes,
+            &[lot_bump]
+        ];
+
+        let list = ctx.accounts;
+
+        TransferV1CpiBuilder::new(&list.core_program.to_account_info())
+            .asset(&list.asset.to_account_info())
+            .payer(&list.buyer.to_account_info())
+            .authority(Some(&list.lot.to_account_info()))
+            .new_owner(&list.buyer.to_account_info())
+            .system_program(Some(&list.system_program.to_account_info()))
+            .invoke_signed(&[lot_seeds])?;
 
         Ok(())
     }
