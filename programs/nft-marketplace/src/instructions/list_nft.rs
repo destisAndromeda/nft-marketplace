@@ -49,11 +49,19 @@ pub struct ListNft<'info> {
 }
 
 impl<'info> ListNft<'info> {
-	fn validate() -> Result<()> {
+	fn validate(&self) -> Result<()> {
+		let Self {
+			lot,
+			..
+		} = self;
+
+		require!(
+			matches!(lot.status, LotStatus::AvailableForSale { .. }),
+			CustomError::UnavailableForSale,
+		);
 
 		Ok(())
 	}
-
 
 	pub fn list_nft(ctx: Context<Self>, args: ListNftArgs) -> Result<()> {
 
