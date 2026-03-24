@@ -75,6 +75,11 @@ impl<'info> BuyNft<'info> {
         } = self;
 
         require!(
+            lot.is_listed,
+            CustomError::NotYetListed,
+        );
+
+        require!(
             matches!(lot.status, LotStatus::AvailableForSale { .. }),
             CustomError::UnavailableForSale,
         );
