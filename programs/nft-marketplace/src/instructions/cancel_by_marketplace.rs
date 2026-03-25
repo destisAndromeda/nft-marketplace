@@ -20,11 +20,12 @@ pub struct CancelByMarketplace<'info> {
     pub creator_key: Signer<'info>,
 
     #[account(
+        mut,
         seeds = [
             PROGRAM_PREFIX,
             marketplace.key().as_ref(),
             TRANSACTION,
-            &args.lot_owner.key().as_ref(),
+            args.lot_owner.as_ref(),
             LOT,
             &args.lot_index.to_le_bytes(),
         ],
