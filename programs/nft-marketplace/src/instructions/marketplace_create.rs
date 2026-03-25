@@ -6,7 +6,7 @@ use crate::error::*;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct MarketplaceCreateArgs {
-    pub creator_key: Pubkey,
+    pub local_admin: Pubkey,
 
     pub fee_percentage: u64,
 }
@@ -50,7 +50,7 @@ impl<'info> MarketplaceCreate<'info> {
         let marketplace = &mut ctx.accounts.marketplace;
 
         marketplace.multisig_owner = ctx.accounts.owner.key();
-        marketplace.creator_key    = args.creator_key;
+        marketplace.local_admin    = args.local_admin;
 
         marketplace.fee_percentage = args.fee_percentage;
         marketplace.bump = ctx.bumps.marketplace;

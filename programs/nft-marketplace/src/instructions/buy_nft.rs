@@ -5,7 +5,6 @@ use anchor_lang::solana_program::{
 };
 
 use mpl_core::{ 
-    // self,
     instructions::TransferV1CpiBuilder,
     programs,
 };
@@ -129,15 +128,14 @@ impl<'info> BuyNft<'info> {
             &[lot_bump]
         ];
 
-        let list = ctx.accounts;
         #[cfg(not(feature = "testing"))]
         {
-            TransferV1CpiBuilder::new(&list.core_program.to_account_info())
-                .asset(&list.asset.to_account_info())
-                .payer(&list.buyer.to_account_info())
-                .authority(Some(&list.lot.to_account_info()))
-                .new_owner(&list.buyer.to_account_info())
-                .system_program(Some(&list.system_program.to_account_info()))
+            TransferV1CpiBuilder::new(&ctx.accounts.core_program.to_account_info())
+                .asset(&ctx.accounts.asset.to_account_info())
+                .payer(&ctx.accounts.buyer.to_account_info())
+                .authority(Some(&ctx.accounts.lot.to_account_info()))
+                .new_owner(&ctx.accounts.buyer.to_account_info())
+                .system_program(Some(&ctx.accounts.system_program.to_account_info()))
                 .invoke_signed(&[lot_seeds])?;
         }
         #[cfg(feature = "testing")]

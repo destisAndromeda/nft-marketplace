@@ -1,5 +1,10 @@
 use anchor_lang::prelude::*;
 
+use mpl_core::{
+    instructions::TransferV1CpiBuilder,
+    programs,
+};
+
 use crate::state::*;
 use crate::seeds::*;
 use crate::error::*;
@@ -17,10 +22,12 @@ pub struct CancelByMarketplaceArgs {
 #[instruction(args: CancelByMarketplaceArgs)]
 pub struct CancelByMarketplace<'info> {
     // Looks like i need this for cancel only
-    pub creator_key: Signer<'info>,
+    pub local_admin: Signer<'info>,
 
     #[account(
         mut,
+        has_one = asset
+            @ CustomError::InvalidAsset,
         seeds = [
             PROGRAM_PREFIX,
             marketplace.key().as_ref(),
@@ -34,7 +41,7 @@ pub struct CancelByMarketplace<'info> {
     pub lot: Account<'info, Lot>,
 
     #[account(
-        has_one = creator_key 
+        has_one = local_admin 
             @ CustomError::Unauthorized,
         seeds = [
             PROGRAM_PREFIX,
@@ -51,6 +58,20 @@ pub struct CancelByMarketplace<'info> {
         bump  = program_config.bump,
     )]
     pub program_config: Account<'info, ProgramConfig>,
+
+    /// CHECK: Asset connected to the lot
+    #[account(mut, address = programs::MPL_CORE_ID)]
+    pub asset: UncheckedAccount<'info>,
+
+    /// CHECK: Source owner of asset
+    #[account(mut, address = programs::MPL_CORE_ID)]
+    pub source_owner: UncheckedAccount<'info>,
+
+    /// CHECK: MPL Core Program
+    #[account(address = programs::MPL_CORE_ID)]
+    pub core_program: UncheckedAccount<'info>,
+
+    pub system_program: Program<'info, System>,
 }
 
 impl<'info> CancelByMarketplace<'info> {
@@ -74,12 +95,34 @@ impl<'info> CancelByMarketplace<'info> {
     }
 
     #[access_control(ctx.accounts.validate())]
-    pub fn cancel_by_marketplace(ctx: Context<Self>, _args: CancelByMarketplaceArgs) -> Result<()> {
-        let lot = &mut ctx.accounts.lot;
-
-        lot.status = LotStatus::CancelledByMarketplace {
+    pub fn cancel_by_marketplace(ctx: Context<Self>, args: CancelByMarketplaceArgs) -> Result<()> {
+        ctx.accounts.lot.status = LotStatus::CancelledByMarketplace {
             timestamp: Clock::get()?.unix_timestamp,
         };
+
+        let marketplace_key = ctx.accounts.marketplace.key();
+        let owner_key       = args.lot_owner.key();
+        let lot_index_bytes = args.lot_index.to_le_bytes();
+        let lot_bump        = ctx.accounts.lot.bump;
+
+        let lot_seeds: &[&[u8]] = &[
+            PROGRAM_PREFIX,
+            marketplace_key.as_ref(),
+            TRANSACTION,
+            owner_key.as_ref(),
+            LOT,
+            &lot_index_bytes,
+            &[lot_bump]
+        ];
+
+        TransferV1CpiBuilder::new(&ctx.accounts.core_program.to_account_info())
+            .asset(&ctx.accounts.asset.to_account_info())
+            .payer(&ctx.accounts.local_admin.to_account_info())
+            .authority(Some(&ctx.accounts.lot.to_account_info()))
+            .new_owner(&ctx.accounts.source_owner.to_account_info())
+            .system_program(Some(&ctx.accounts.system_program.to_account_info()))
+            .invoke_signed(&[lot_seeds])?;
+
 
         Ok(())
     }

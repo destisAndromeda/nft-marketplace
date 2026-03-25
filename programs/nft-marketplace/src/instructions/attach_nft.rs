@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token_interface::{ self, TokenAccount, TokenInterface };
+use anchor_spl::token_interface::{ TokenAccount, TokenInterface };
 
 use crate::state::*;
 use crate::seeds::*;
@@ -64,7 +64,26 @@ pub struct AttachNft<'info> {
 }
 
 impl<'info> AttachNft<'info> {
-    // @TODO: maybe should add check lot.status == LotStatus::Created 
+    fn validate(&self) -> Result<()> {
+        let Self {
+            lot,
+            ..
+        } = self;
+
+        require!(
+            !lot.is_listed,
+            CustomError::AlreadyListed,
+        );
+
+        require!(
+            matches!(lot.status, LotStatus::Created { .. }),
+            CustomError::InvalidLotStatus,
+        );
+
+        Ok(())
+    }
+
+    #[access_control(ctx.accounts.validate())]
     pub fn attach_nft(ctx: Context<Self>, args: AttachNftArgs) -> Result<()> {
         let lot = &mut ctx.accounts.lot;
 

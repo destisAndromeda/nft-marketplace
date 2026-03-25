@@ -106,7 +106,6 @@ describe("nft-marketplace", () => {
     await program.methods
       .lotCreate({
         marketplaceIndex,
-        asset: mint,
         currency: anchor.web3.SystemProgram.programId,
         price: new anchor.BN(anchor.web3.LAMPORTS_PER_SOL),
       })
@@ -388,7 +387,6 @@ describe("nft-marketplace", () => {
     await program.methods
       .lotCreate({
         marketplaceIndex,
-        asset: anchor.web3.Keypair.generate().publicKey,
         currency: anchor.web3.SystemProgram.programId,
         price: new anchor.BN(1000000),
       })
@@ -452,7 +450,6 @@ describe("nft-marketplace", () => {
     await program.methods
       .lotCreate({
         marketplaceIndex,
-        asset: anchor.web3.Keypair.generate().publicKey,
         currency: anchor.web3.SystemProgram.programId,
         price: new anchor.BN(1000000),
       })
