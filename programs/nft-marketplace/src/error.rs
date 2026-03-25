@@ -24,4 +24,6 @@ pub enum CustomError {
     InvalidAsset,
     #[msg("Not Nft Owner")]
     NotNftOwner,
+    #[msg("Already Cancelled")]
+    AlreadyCancelled,
 }

@@ -54,6 +54,20 @@ pub struct CancelByMarketplace<'info> {
 
 impl<'info> CancelByMarketplace<'info> {
     fn validate(&self) -> Result<()> {
+        let Self {
+            lot,
+            ..
+        } = self;
+
+        require!(
+            !matches!(lot.status, LotStatus::CancelledByMarketplace { .. }),
+            CustomError::AlreadyCancelled,
+        );
+
+        require!(
+            !matches!(lot.status, LotStatus::CancelledByOwner { .. }),
+            CustomError::AlreadyCancelled,
+        );
 
         Ok(())
     }
