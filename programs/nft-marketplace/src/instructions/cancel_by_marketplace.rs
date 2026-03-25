@@ -74,7 +74,11 @@ impl<'info> CancelByMarketplace<'info> {
 
     #[access_control(ctx.accounts.validate())]
     pub fn cancel_by_marketplace(ctx: Context<Self>, _args: CancelByMarketplaceArgs) -> Result<()> {
+        let lot = &mut ctx.accounts.lot;
 
+        lot.status = LotStatus::CancelledByMarketplace {
+            timestamp: Clock::get()?.unix_timestamp,
+        };
 
         Ok(())
     }
