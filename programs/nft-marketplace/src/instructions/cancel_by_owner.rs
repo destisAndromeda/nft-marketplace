@@ -51,7 +51,32 @@ pub struct CancelByOwner<'info> {
 }
 
 impl<'info> CancelByOwner<'info> {
+    fn validate(&self) -> Result<()> {
+        let Self {
+            lot,
+            ..
+        } = self;
+
+        require!(
+            !matches!(lot.status, LotStatus::CancelledByOwner { .. }),
+            CustomError::AlreadyCancelled,
+        );
+
+        require!(
+            !matches!(lot.status, LotStatus::CancelledByMarketplace { .. }),
+            CustomError::AlreadyCancelled,
+        );
+
+        Ok(())
+    }
+
+    #[access_control(ctx.accounts.validate())]
     pub fn cancel_by_owner(ctx: Context<Self>, _args: CancelByOwnerArgs) -> Result<()> {
+        let lot = &mut ctx.accounts.lot;
+
+        lot.status = LotStatus::CancelledByOwner {
+            timestamp: Clock::get()?.unix_timestamp,
+        };
 
         Ok(())
     }
