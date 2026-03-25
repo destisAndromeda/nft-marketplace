@@ -89,4 +89,11 @@ pub mod nft_marketplace {
     ) -> Result<()> {
         CancelByMarketplace::cancel_by_marketplace(ctx, args)
     }
+
+    pub fn cancel_by_owner(
+        ctx: Context<CancelByOwner>,
+        args: CancelByOwnerArgs,
+    ) -> Result<()> {
+        CancelByOwner::cancel_by_owner(ctx, args)
+    }
 }
