@@ -10,7 +10,7 @@ pub struct LotCreateArgs {
 
     pub asset: Pubkey,
  
-    pub currency: Pubkey,
+    pub currency: Option<Pubkey>,
 
     pub price: u64,
 }
