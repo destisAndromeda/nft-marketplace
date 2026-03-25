@@ -422,6 +422,69 @@ describe("nft-marketplace", () => {
     expect(lotAccount.status).to.have.property("cancelledByMarketplace");
   });
 
+  it("Cancels a lot by owner", async () => {
+    const marketplaceIndex = new anchor.BN(0);
+    const lotIndex = new anchor.BN(2); // Use a new lot index for cancellation test
+
+    const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("marketplace"),
+        initialAuthority.publicKey.toBuffer(),
+        Buffer.from("marketplace"),
+        marketplaceIndex.toArrayLike(Buffer, "le", 8),
+      ],
+      program.programId
+    );
+
+    const [lotPda] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("marketplace"),
+        marketplacePda.toBuffer(),
+        Buffer.from("transaction"),
+        initialAuthority.publicKey.toBuffer(),
+        Buffer.from("lot"),
+        lotIndex.toArrayLike(Buffer, "le", 8),
+      ],
+      program.programId
+    );
+
+    // Create the lot first
+    await program.methods
+      .lotCreate({
+        marketplaceIndex,
+        asset: anchor.web3.Keypair.generate().publicKey,
+        currency: anchor.web3.SystemProgram.programId,
+        price: new anchor.BN(1000000),
+      })
+      .accounts({
+        owner: initialAuthority.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
+        programConfig: programConfigPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .signers([initialAuthority])
+      .rpc();
+
+    // Now cancel it by owner
+    await program.methods
+      .cancelByOwner({
+        marketplaceIndex: marketplaceIndex,
+        lotIndex: lotIndex,
+      })
+      .accounts({
+        owner: initialAuthority.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
+        programConfig: programConfigPda,
+      })
+      .signers([initialAuthority])
+      .rpc();
+
+    const lotAccount = await program.account.lot.fetch(lotPda);
+    expect(lotAccount.status).to.have.property("cancelledByOwner");
+  });
+
   it("Updates marketplace fee percentage", async () => {
     const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
       [
