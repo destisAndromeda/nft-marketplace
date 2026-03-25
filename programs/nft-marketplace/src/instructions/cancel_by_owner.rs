@@ -13,7 +13,7 @@ pub struct CancelByOwnerArgs {
 
 #[derive(Accounts)]
 #[instruction(args: CancelByOwnerArgs)]
-pub struct CancelByOnwer<'info> {
+pub struct CancelByOwner<'info> {
     pub owner: Signer<'info>,
 
     #[account(
@@ -48,4 +48,11 @@ pub struct CancelByOnwer<'info> {
         bump  = program_config.bump,
     )]
     pub program_config: Account<'info, ProgramConfig>,
+}
+
+impl<'info> CancelByOwner<'info> {
+    pub fn cancel_by_owner(ctx: Context<Self>, _args: CancelByOwnerArgs) -> Result<()> {
+
+        Ok(())
+    }
 }
