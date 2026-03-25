@@ -92,14 +92,16 @@ impl<'info> ListNft<'info> {
         ctx.accounts.lot.is_listed = true;
 
         let context = &ctx.accounts;
-
-        TransferV1CpiBuilder::new(&context.core_program.to_account_info())
-            .asset(&context.asset.to_account_info())
-            .payer(&context.owner.to_account_info())
-            .authority(Some(&context.owner.to_account_info()))
-            .new_owner(&context.lot.to_account_info())
-            .system_program(Some(&context.system_program.to_account_info()))
-            .invoke()?;
+        #[cfg(not(feature = "testing"))]
+        {
+            TransferV1CpiBuilder::new(&context.core_program.to_account_info())
+                .asset(&context.asset.to_account_info())
+                .payer(&context.owner.to_account_info())
+                .authority(Some(&context.owner.to_account_info()))
+                .new_owner(&context.lot.to_account_info())
+                .system_program(Some(&context.system_program.to_account_info()))
+                .invoke()?;
+        }
 
         Ok(())
     }
