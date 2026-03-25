@@ -53,7 +53,14 @@ pub struct CancelByMarketplace<'info> {
 }
 
 impl<'info> CancelByMarketplace<'info> {
+    fn validate(&self) -> Result<()> {
+
+        Ok(())
+    }
+
+    #[access_control(ctx.accounts.validate())]
     pub fn cancel_by_marketplace(ctx: Context<Self>, _args: CancelByMarketplaceArgs) -> Result<()> {
+
 
         Ok(())
     }
