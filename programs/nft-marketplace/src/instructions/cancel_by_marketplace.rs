@@ -52,9 +52,9 @@ pub struct CancelByMarketplace<'info> {
     pub program_config: Account<'info, ProgramConfig>,
 }
 
-// impl<'info> CancelByMarketplace<'info> {
-//     pub fn cancel_by_marketplace(ctx: Context<Self>, _args: CancelByMarketplaceArgs) -> Result<()> {
+impl<'info> CancelByMarketplace<'info> {
+    pub fn cancel_by_marketplace(ctx: Context<Self>, _args: CancelByMarketplaceArgs) -> Result<()> {
 
-//         Ok(())
-//     }
-// }
+        Ok(())
+    }
+}
