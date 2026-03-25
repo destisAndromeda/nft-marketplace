@@ -10,7 +10,7 @@ pub struct Lot {
     /// NFT mint account
     pub asset: Pubkey,
     /// Current NFT price
-    pub currency: Pubkey,
+    pub currency: Option<Pubkey>,
     /// NFT price in lamports
     pub price: u64,
     /// Lot status in the Marketplace
