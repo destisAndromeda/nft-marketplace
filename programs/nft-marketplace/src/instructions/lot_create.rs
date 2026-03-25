@@ -8,7 +8,7 @@ use crate::error::*;
 pub struct LotCreateArgs {
     pub marketplace_index: u64,
 
-    pub asset: Pubkey,
+    // pub asset: Pubkey,
  
     pub currency: Option<Pubkey>,
 
@@ -69,7 +69,7 @@ impl<'info> LotCreate<'info> {
         lot.marketplace = ctx.accounts.marketplace.key();
         lot.owner = ctx.accounts.owner.key();
         
-        lot.asset = args.asset;
+        // lot.asset = args.asset;
         lot.currency = args.currency;
         lot.price = args.price;
 

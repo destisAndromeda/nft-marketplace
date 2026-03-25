@@ -64,6 +64,7 @@ pub struct AttachNft<'info> {
 }
 
 impl<'info> AttachNft<'info> {
+    // @TODO: maybe should add check lot.status == LotStatus::Created 
     pub fn attach_nft(ctx: Context<Self>, args: AttachNftArgs) -> Result<()> {
         let lot = &mut ctx.accounts.lot;
 
