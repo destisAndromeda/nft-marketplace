@@ -20,4 +20,8 @@ pub enum CustomError {
     AlreadyListed,
     #[msg("Not Yet Listed")]
     NotYetListed,
+    #[msg("Invalid Asset")]
+    InvalidAsset,
+    #[msg("Not Nft Owner")]
+    NotNftOwner,
 }

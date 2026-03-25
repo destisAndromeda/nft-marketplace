@@ -2,6 +2,13 @@ import * as anchor from "@coral-xyz/anchor";
 import { Program } from "@coral-xyz/anchor";
 import { NftMarketplace } from "../target/types/nft_marketplace";
 import { expect } from "chai";
+import {
+  createMint,
+  getOrCreateAssociatedTokenAccount,
+  mintTo,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
+import { BN } from "bn.js";
 
 describe("nft-marketplace", () => {
   const provider = anchor.AnchorProvider.env();
@@ -146,7 +153,6 @@ describe("nft-marketplace", () => {
   });
 
   it("Attaches an NFT to a lot", async () => {
-    const newAsset = anchor.web3.Keypair.generate().publicKey;
     const marketplaceIndex = new anchor.BN(0);
     const lotIndex = new anchor.BN(0);
 
@@ -174,23 +180,52 @@ describe("nft-marketplace", () => {
       program.programId
     );
 
+    // Create a mint
+    const mint = await createMint(
+      provider.connection,
+      initialAuthority,
+      initialAuthority.publicKey,
+      null,
+      0 // 0 decimals for NFT
+    );
+
+    // Create associated token account for initialAuthority
+    const ata = await getOrCreateAssociatedTokenAccount(
+      provider.connection,
+      initialAuthority,
+      mint,
+      initialAuthority.publicKey
+    );
+
+    // Mint 1 token to the ATA
+    await mintTo(
+      provider.connection,
+      initialAuthority,
+      mint,
+      ata.address,
+      initialAuthority,
+      1
+    );
+
     await program.methods
       .attachNft({
         marketplaceIndex: marketplaceIndex,
         lotIndex: lotIndex,
-        asset: newAsset,
+        asset: mint,
       })
       .accounts({
         owner: initialAuthority.publicKey,
         lot: lotPda,
         marketplace: marketplacePda,
         programConfig: programConfigPda,
+        nftTokenAccount: ata.address,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([initialAuthority])
       .rpc();
 
     const lotAccount = await program.account.lot.fetch(lotPda);
-    expect(lotAccount.asset.toBase58()).to.equal(newAsset.toBase58());
+    expect(lotAccount.asset.toBase58()).to.equal(mint.toBase58());
   });
   // list_nft and buy_nft require the Metaplex Core program to be present in the environment for the CPIs to succeed.
   // it("Lists an NFT", async () => {

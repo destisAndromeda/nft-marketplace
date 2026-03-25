@@ -1,8 +1,9 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token_interface::{ self, TokenAccount, TokenInterface };
 
 use crate::state::*;
 use crate::seeds::*;
-// use crate::error::*;
+use crate::error::*;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
 pub struct AttachNftArgs {
@@ -48,10 +49,21 @@ pub struct AttachNft<'info> {
         bump  = program_config.bump,
     )]
     pub program_config: Account<'info, ProgramConfig>,
+
+    #[account(
+        constraint = nft_token_account.mint == args.asset
+            @ CustomError::InvalidAsset,
+        constraint = nft_token_account.owner == owner.key()
+            @ CustomError::NotNftOwner,
+        constraint = nft_token_account.amount == 1
+            @ CustomError::InvalidAsset,
+    )]
+    pub nft_token_account: InterfaceAccount<'info, TokenAccount>,
+
+    pub token_program: Interface<'info, TokenInterface>,
 }
 
 impl<'info> AttachNft<'info> {
-    // @TODO: add check for lot.owner == asset.owner
     pub fn attach_nft(ctx: Context<Self>, args: AttachNftArgs) -> Result<()> {
         let lot = &mut ctx.accounts.lot;
 
