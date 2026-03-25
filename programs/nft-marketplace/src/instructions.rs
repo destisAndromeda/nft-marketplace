@@ -8,6 +8,7 @@ pub mod buy_nft;
 pub mod attach_nft;
 pub mod list_nft;
 pub mod cancel_by_marketplace;
+pub mod cancel_by_owner;
 
 pub use program_config_init::*;
 pub use program_config_update::*;
@@ -19,3 +20,4 @@ pub use buy_nft::*;
 pub use attach_nft::*;
 pub use list_nft::*;
 pub use cancel_by_marketplace::*;
+pub use cancel_by_owner::*;
