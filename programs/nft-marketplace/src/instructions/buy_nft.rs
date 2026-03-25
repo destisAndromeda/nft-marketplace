@@ -1,4 +1,9 @@
 use anchor_lang::prelude::*;
+use anchor_lang::solana_program::{
+    program,
+    system_instruction,
+};
+
 use mpl_core::{ 
     // self,
     instructions::TransferV1CpiBuilder,
@@ -54,6 +59,10 @@ pub struct BuyNft<'info> {
         bump  = program_config.bump,
     )]
     pub program_config: Account<'info, ProgramConfig>,
+
+    /// CHECK: Lot owner, gets money
+    #[account(mut, address = lot.owner)]
+    pub salesperson: UncheckedAccount<'info>,
 
     /// CHECK: Account of asset that containing inside the lot 
     #[account(mut, address = lot.asset)]
