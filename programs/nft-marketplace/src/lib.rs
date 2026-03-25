@@ -83,5 +83,10 @@ pub mod nft_marketplace {
         ListNft::list_nft(ctx, args)
     }
 
-    
+    pub fn cancel_by_marketplace(
+        ctx: Context<CancelByMarketplace>,
+        args: CancelByMarketplaceArgs,
+    ) -> Result<()> {
+        CancelByMarketplace::cancel_by_marketplace(ctx, args)
+    }
 }
