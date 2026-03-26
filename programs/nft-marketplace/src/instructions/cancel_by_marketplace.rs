@@ -60,11 +60,11 @@ pub struct CancelByMarketplace<'info> {
     pub program_config: Account<'info, ProgramConfig>,
 
     /// CHECK: Asset connected to the lot
-    #[account(mut, address = programs::MPL_CORE_ID)]
+    #[account(mut)]
     pub asset: UncheckedAccount<'info>,
 
     /// CHECK: Source owner of asset
-    #[account(mut, address = programs::MPL_CORE_ID)]
+    #[account(mut, address = lot.owner)]
     pub source_owner: UncheckedAccount<'info>,
 
     /// CHECK: MPL Core Program
@@ -112,17 +112,23 @@ impl<'info> CancelByMarketplace<'info> {
             owner_key.as_ref(),
             LOT,
             &lot_index_bytes,
-            &[lot_bump]
+            &[lot_bump],
         ];
 
-        TransferV1CpiBuilder::new(&ctx.accounts.core_program.to_account_info())
-            .asset(&ctx.accounts.asset.to_account_info())
-            .payer(&ctx.accounts.local_admin.to_account_info())
-            .authority(Some(&ctx.accounts.lot.to_account_info()))
-            .new_owner(&ctx.accounts.source_owner.to_account_info())
-            .system_program(Some(&ctx.accounts.system_program.to_account_info()))
-            .invoke_signed(&[lot_seeds])?;
-
+        #[cfg(not(feature = "testing"))]
+        {
+            TransferV1CpiBuilder::new(&ctx.accounts.core_program.to_account_info())
+                .asset(&ctx.accounts.asset.to_account_info())
+                .payer(&ctx.accounts.local_admin.to_account_info())
+                .authority(Some(&ctx.accounts.lot.to_account_info()))
+                .new_owner(&ctx.accounts.source_owner.to_account_info())
+                .system_program(Some(&ctx.accounts.system_program.to_account_info()))
+                .invoke_signed(&[lot_seeds])?;
+        }
+        #[cfg(feature = "testing")]
+        {
+            msg!("Skip CPI to metaplcx");
+        }
 
         Ok(())
     }

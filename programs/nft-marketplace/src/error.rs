@@ -40,4 +40,7 @@ pub enum CustomError {
 
     #[msg("Invalid Lot Status")]
     InvalidLotStatus,
+
+    #[msg("Incorrect Account For Refund")]
+    IncorrectAccountForRefund,
 }

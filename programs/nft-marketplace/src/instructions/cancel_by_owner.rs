@@ -1,5 +1,10 @@
 use anchor_lang::prelude::*;
 
+use mpl_core::{
+    instructions::TransferV1CpiBuilder,
+    programs,
+};
+
 use crate::state::*;
 use crate::seeds::*;
 use crate::error::*;
@@ -48,6 +53,16 @@ pub struct CancelByOwner<'info> {
         bump  = program_config.bump,
     )]
     pub program_config: Account<'info, ProgramConfig>,
+
+    /// CHECK: Lot asset account for refund
+    #[account(address = lot.asset)]
+    pub asset: UncheckedAccount<'info>,
+
+    /// CHECK: MPL Core Program
+    #[account(address = programs::MPL_CORE_ID)]
+    pub core_program: UncheckedAccount<'info>,
+
+    pub system_program: Program<'info, System>,
 }
 
 impl<'info> CancelByOwner<'info> {
@@ -71,12 +86,42 @@ impl<'info> CancelByOwner<'info> {
     }
 
     #[access_control(ctx.accounts.validate())]
-    pub fn cancel_by_owner(ctx: Context<Self>, _args: CancelByOwnerArgs) -> Result<()> {
+    pub fn cancel_by_owner(ctx: Context<Self>, args: CancelByOwnerArgs) -> Result<()> {
         let lot = &mut ctx.accounts.lot;
 
         lot.status = LotStatus::CancelledByOwner {
             timestamp: Clock::get()?.unix_timestamp,
         };
+
+        let marketplace_key = ctx.accounts.marketplace.key();
+        let owner_key       = ctx.accounts.lot.owner.key();
+        let lot_index_bytes = args.lot_index.to_le_bytes();
+        let lot_bump        = ctx.accounts.lot.bump;
+
+        let lot_seeds: &[&[u8]] = &[
+            PROGRAM_PREFIX,
+            marketplace_key.as_ref(),
+            TRANSACTION,
+            owner_key.as_ref(),
+            LOT,
+            &lot_index_bytes,
+            &[lot_bump],
+        ];
+
+        #[cfg(not(feature = "testing"))]
+        {
+            TransferV1CpiBuilder::new(&ctx.accounts.core_program.to_account_info())
+                .asset(&ctx.accounts.asset.to_account_info())
+                .payer(&ctx.accounts.owner.to_account_info())
+                .authority(Some(&ctx.accounts.lot.to_account_info()))
+                .new_owner(&ctx.accounts.owner.to_account_info())
+                .system_program(Some(&ctx.accounts.system_program.to_account_info()))
+                .invoke_signed(&[lot_seeds])?;
+        }
+        #[cfg(feature = "testing")]
+        {
+            msg!("Skip CPI to metaplex");
+        }
 
         Ok(())
     }
