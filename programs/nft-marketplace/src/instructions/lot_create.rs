@@ -60,31 +60,6 @@ pub struct LotCreate<'info> {
 
 impl<'info> LotCreate<'info> {
     pub fn lot_create(ctx: Context<Self>, args: LotCreateArgs) -> Result<()> {
-        let lot = &mut ctx.accounts.lot;
-
-        #[cfg(not(feature = "refactor"))]
-        {
-            lot.status = LotStatus::Created {
-                timestamp: Clock::get()?.unix_timestamp,
-            };
-
-            lot.marketplace = ctx.accounts.marketplace.key();
-            lot.owner = ctx.accounts.owner.key();
-            
-            // lot.asset = args.asset;
-            lot.currency = args.currency;
-            lot.price = args.price;
-
-            lot.is_listed = false;
-
-            lot.bump = ctx.bumps.lot;
-
-            ctx.accounts.marketplace.transaction_index =
-            ctx.accounts.marketplace.transaction_index.checked_add(1).ok_or(
-                CustomError::Overflow,
-            )?;
-        }
-
         let marketplace = ctx.accounts.marketplace.key();            
         let owner = ctx.accounts.owner.key();
 
@@ -97,7 +72,7 @@ impl<'info> LotCreate<'info> {
         };
   
         let is_listed = false;
-        let  bump = ctx.bumps.lot;
+        let bump = ctx.bumps.lot;
 
         ctx.accounts.lot.set_inner(Lot {
             marketplace,
@@ -109,6 +84,11 @@ impl<'info> LotCreate<'info> {
             is_listed,
             bump,
         });
+
+        ctx.accounts.marketplace.transaction_index = 
+        ctx.accounts.marketplace.transaction_index.checked_add(1).ok_or(
+            CustomError::Overflow,
+        )?;
 
         Ok(())
     }
