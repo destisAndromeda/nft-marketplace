@@ -65,7 +65,7 @@ describe("nft-marketplace", () => {
 
     await program.methods
       .marketplaceCreate({
-        creatorKey: initialAuthority.publicKey,
+        localAdmin: initialAuthority.publicKey,
         feePercentage: new anchor.BN(500),
       })
       .accounts({
@@ -400,6 +400,28 @@ describe("nft-marketplace", () => {
       .signers([initialAuthority])
       .rpc();
 
+    // Generate mint and attach it
+    const cancelMint1 = await createMint(provider.connection, initialAuthority, initialAuthority.publicKey, null, 0);
+    const ata1 = await getOrCreateAssociatedTokenAccount(provider.connection, initialAuthority, cancelMint1, initialAuthority.publicKey);
+    await mintTo(provider.connection, initialAuthority, cancelMint1, ata1.address, initialAuthority, 1);
+
+    await program.methods
+      .attachNft({
+        marketplaceIndex,
+        lotIndex,
+        asset: cancelMint1,
+      })
+      .accounts({
+        owner: initialAuthority.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
+        programConfig: programConfigPda,
+        nftTokenAccount: ata1.address,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([initialAuthority])
+      .rpc();
+
     // Now cancel it
     await program.methods
       .cancelByMarketplace({
@@ -408,10 +430,14 @@ describe("nft-marketplace", () => {
         lotOwner: initialAuthority.publicKey,
       })
       .accounts({
-        creatorKey: initialAuthority.publicKey,
+        localAdmin: initialAuthority.publicKey,
         lot: lotPda,
         marketplace: marketplacePda,
         programConfig: programConfigPda,
+        asset: cancelMint1,
+        sourceOwner: initialAuthority.publicKey,
+        coreProgram: new anchor.web3.PublicKey("CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"),
+        systemProgram: anchor.web3.SystemProgram.programId,
       })
       .signers([initialAuthority])
       .rpc();
@@ -463,6 +489,28 @@ describe("nft-marketplace", () => {
       .signers([initialAuthority])
       .rpc();
 
+    // Generate mint and attach it
+    const cancelMint2 = await createMint(provider.connection, initialAuthority, initialAuthority.publicKey, null, 0);
+    const ata2 = await getOrCreateAssociatedTokenAccount(provider.connection, initialAuthority, cancelMint2, initialAuthority.publicKey);
+    await mintTo(provider.connection, initialAuthority, cancelMint2, ata2.address, initialAuthority, 1);
+
+    await program.methods
+      .attachNft({
+        marketplaceIndex,
+        lotIndex,
+        asset: cancelMint2,
+      })
+      .accounts({
+        owner: initialAuthority.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
+        programConfig: programConfigPda,
+        nftTokenAccount: ata2.address,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .signers([initialAuthority])
+      .rpc();
+
     // Now cancel it by owner
     await program.methods
       .cancelByOwner({
@@ -474,6 +522,9 @@ describe("nft-marketplace", () => {
         lot: lotPda,
         marketplace: marketplacePda,
         programConfig: programConfigPda,
+        asset: cancelMint2,
+        coreProgram: new anchor.web3.PublicKey("CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"),
+        systemProgram: anchor.web3.SystemProgram.programId,
       })
       .signers([initialAuthority])
       .rpc();

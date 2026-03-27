@@ -64,7 +64,7 @@ pub struct CancelByMarketplace<'info> {
     pub asset: UncheckedAccount<'info>,
 
     /// CHECK: Source owner of asset
-    #[account(mut, address = lot.owner)]
+    #[account(mut)]
     pub source_owner: UncheckedAccount<'info>,
 
     /// CHECK: MPL Core Program
@@ -127,7 +127,7 @@ impl<'info> CancelByMarketplace<'info> {
         }
         #[cfg(feature = "testing")]
         {
-            msg!("Skip CPI to metaplcx");
+            msg!("Skip CPI to metaplex");
         }
 
         Ok(())
