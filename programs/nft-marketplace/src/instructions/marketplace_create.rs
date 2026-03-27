@@ -47,19 +47,45 @@ pub struct MarketplaceCreate<'info> {
 
 impl<'info> MarketplaceCreate<'info> {
     pub fn marketplace_create(ctx: Context<Self>, args: MarketplaceCreateArgs) -> Result<()> {
-        let marketplace = &mut ctx.accounts.marketplace;
+        #[cfg(not(feature = "refactor"))]
+        {
+            let marketplace = &mut ctx.accounts.marketplace;
 
-        marketplace.multisig_owner = ctx.accounts.owner.key();
-        marketplace.local_admin    = args.local_admin;
+            marketplace.multisig_owner = ctx.accounts.owner.key();
+            marketplace.local_admin    = args.local_admin;
 
-        marketplace.fee_percentage = args.fee_percentage;
-        marketplace.bump = ctx.bumps.marketplace;
+            marketplace.fee_percentage = args.fee_percentage;
+            marketplace.bump = ctx.bumps.marketplace;
 
-        marketplace.transaction_index = 0;
-        ctx.accounts.program_config.transaction_index = 
-        ctx.accounts.program_config.transaction_index.checked_add(1).ok_or(
-            CustomError::Overflow,
-        )?;
+            marketplace.transaction_index = 0;
+            ctx.accounts.program_config.transaction_index = 
+            ctx.accounts.program_config.transaction_index.checked_add(1).ok_or(
+                CustomError::Overflow,
+            )?;
+        }
+        #[cfg(feature = "refactor")]
+        {
+            let multisig_owner = ctx.accounts.owner.key();
+            let local_admin    = args.local_admin;
+
+            let transaction_index = 0;
+            let fee_percentage    = args.fee_percentage;
+
+            let bump = ctx.bumps.marketplace;
+
+            ctx.accounts.marketplace.set_inner(Marketplace {
+                multisig_owner,
+                local_admin,
+                fee_percentage,
+                transaction_index,
+                bump,
+            });
+        
+            ctx.accounts.program_config.transaction_index =
+            ctx.accounts.program_config.transaction_index.checked_add(1).ok_or(
+                CustomError::Overflow
+            )?;
+        }
 
         Ok(())
     }
