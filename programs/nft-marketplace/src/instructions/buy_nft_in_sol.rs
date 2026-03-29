@@ -21,7 +21,7 @@ pub struct BuyNftInSolArgs {
 
     pub lot_index: u64,
 
-    pub salesperson: Pubkey,
+    pub salesperson: Pubkey, // @TODO: use only transfered account in BuyNftInSol
 }
 
 #[derive(Accounts)]
@@ -156,7 +156,7 @@ impl<'info> BuyNftInSol<'info> {
             salesperson_key.as_ref(),
             SEED_LOT,
             &lot_index_bytes,
-            &[lot_bump]
+            &[lot_bump],
         ];
 
         #[cfg(not(feature = "testing"))]

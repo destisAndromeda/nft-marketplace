@@ -8,6 +8,7 @@ pub mod buy_nft_in_sol;
 pub mod list_nft;
 pub mod cancel_by_marketplace;
 pub mod cancel_by_owner;
+pub mod buy_nft_in_token;
 
 pub use program_config_init::*;
 pub use program_config_update::*;
@@ -19,3 +20,4 @@ pub use buy_nft_in_sol::*;
 pub use list_nft::*;
 pub use cancel_by_marketplace::*;
 pub use cancel_by_owner::*;
+pub use buy_nft_in_token::*;
