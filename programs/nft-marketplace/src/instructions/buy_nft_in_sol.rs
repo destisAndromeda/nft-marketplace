@@ -16,7 +16,7 @@ use crate::seeds::*;
 use crate::error::*;
 
 #[derive(AnchorSerialize, AnchorDeserialize)]
-pub struct BuyNftArgs {
+pub struct BuyNftInSolArgs {
     pub marketplace_index: u64,
 
     pub lot_index: u64,
@@ -25,8 +25,8 @@ pub struct BuyNftArgs {
 }
 
 #[derive(Accounts)]
-#[instruction(args: BuyNftArgs)]
-pub struct BuyNft<'info> {
+#[instruction(args: BuyNftInSolArgs)]
+pub struct BuyNftInSol<'info> {
     #[account(mut)]
     pub buyer: Signer<'info>,
 
@@ -81,7 +81,7 @@ pub struct BuyNft<'info> {
     pub system_program: Program<'info, System>,
 }
 
-impl<'info> BuyNft<'info> {
+impl<'info> BuyNftInSol<'info> {
     fn validate(&self) -> Result<()> {
         let Self {
             lot,
@@ -102,7 +102,7 @@ impl<'info> BuyNft<'info> {
     }
 
     #[access_control(ctx.accounts.validate())]
-    pub fn buy_nft(ctx: Context<Self>, args: BuyNftArgs) -> Result<()> {
+    pub fn buy_nft_in_sol(ctx: Context<Self>, args: BuyNftInSolArgs) -> Result<()> {
         ctx.accounts.lot.status = LotStatus::Sold {
             timestamp: Clock::get()?.unix_timestamp,
         };

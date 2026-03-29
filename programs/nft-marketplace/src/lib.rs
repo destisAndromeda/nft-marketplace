@@ -62,11 +62,11 @@ pub mod nft_marketplace {
         ChangeLotStatus::make_lot_available_for_sale(ctx, args)
     }
 
-    pub fn buy_nft(
-        ctx: Context<BuyNft>,
-        args: BuyNftArgs,
+    pub fn buy_nft_in_sol(
+        ctx: Context<BuyNftInSol>,
+        args: BuyNftInSolArgs,
     ) -> Result<()> {
-        BuyNft::buy_nft(ctx, args)
+        BuyNftInSol::buy_nft_in_sol(ctx, args)
     }
 
     pub fn list_nft(

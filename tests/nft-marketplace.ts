@@ -336,7 +336,7 @@ describe("nft-marketplace", () => {
     const sellerBalanceBefore = await provider.connection.getBalance(initialAuthority.publicKey);
 
     await program.methods
-      .buyNft({
+      .buyNftInSol({
         marketplaceIndex,
         lotIndex,
         salesperson: initialAuthority.publicKey,
