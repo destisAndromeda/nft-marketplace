@@ -41,14 +41,34 @@ pub struct ProgramConfigInit<'info> {
 
 impl<'info> ProgramConfigInit<'info> {
     pub fn program_config_init(ctx: Context<Self>, args: ProgramConfigArgs) -> Result<()> {
-        let program_config = &mut ctx.accounts.program_config;
+    
+        #[cfg(not(feature = "refactor"))]
+        {
+            let program_config = &mut ctx.accounts.program_config;
 
-        program_config.authority = args.authority;
-        program_config.treasury  = args.treasury;
-        program_config.marketplace_deploy_authority = args.marketplace_deploy_authority;
-        program_config.bump = ctx.bumps.program_config;
+            program_config.authority = args.authority;
+            program_config.treasury  = args.treasury;
+            program_config.marketplace_deploy_authority = args.marketplace_deploy_authority;
+            program_config.bump = ctx.bumps.program_config;
 
-        program_config.transaction_index = 0;
+            program_config.transaction_index = 0;
+        }
+        #[cfg(feature = "refactor")]
+        {
+            let authority = args.authority;
+            let treasury  = args.treasury;
+            let marketplace_deploy_authority = args.marketplace_deploy_authority;
+            let bump = ctx.bumps.program_config;
+            let transaction_index = 0;
+
+            ctx.accounts.program_config.set_inner(ProgramConfig {
+                authority,
+                marketplace_deploy_authority,
+                treasury,
+                transaction_index,
+                bump,
+            });
+        }
 
         Ok(())
     }

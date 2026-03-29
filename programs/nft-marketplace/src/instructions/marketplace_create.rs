@@ -47,24 +47,6 @@ pub struct MarketplaceCreate<'info> {
 
 impl<'info> MarketplaceCreate<'info> {
     pub fn marketplace_create(ctx: Context<Self>, args: MarketplaceCreateArgs) -> Result<()> {
-        #[cfg(not(feature = "refactor"))]
-        {
-            let marketplace = &mut ctx.accounts.marketplace;
-
-            marketplace.multisig_owner = ctx.accounts.owner.key();
-            marketplace.local_admin    = args.local_admin;
-
-            marketplace.fee_percentage = args.fee_percentage;
-            marketplace.bump = ctx.bumps.marketplace;
-
-            marketplace.transaction_index = 0;
-            ctx.accounts.program_config.transaction_index = 
-            ctx.accounts.program_config.transaction_index.checked_add(1).ok_or(
-                CustomError::Overflow,
-            )?;
-        }
-        #[cfg(feature = "refactor")]
-        {
             let multisig_owner = ctx.accounts.owner.key();
             let local_admin    = args.local_admin;
 
@@ -85,7 +67,6 @@ impl<'info> MarketplaceCreate<'info> {
             ctx.accounts.program_config.transaction_index.checked_add(1).ok_or(
                 CustomError::Overflow
             )?;
-        }
 
         Ok(())
     }
