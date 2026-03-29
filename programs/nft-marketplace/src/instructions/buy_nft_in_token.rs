@@ -83,7 +83,7 @@ pub struct BuyNftInToken<'info> {
     pub salesperson_token_mint: InterfaceAccount<'info, Mint>,
 
     #[account(
-        init_if_needed,
+        init_if_needed, // UNSAFE!!!!!
         payer = buyer,
         associated_token::mint = salesperson_token_mint,
         associated_token::authority = salesperson,
@@ -108,11 +108,31 @@ pub struct BuyNftInToken<'info> {
 }
 
 impl<'info> BuyNftInToken<'info> {
+    fn validate(&self) -> Result<()> {
+        let Self {
+            lot,
+            ..
+        } = self;
+
+        require!(
+            lot.is_listed,
+            CustomError::NotYetListed,
+        );
+
+        require!(
+            matches!(lot.status, LotStatus::AvailableForSale { .. }),
+            CustomError::UnavailableForSale,
+        );
+
+        Ok(())
+    }
+
+    #[access_control(ctx.accounts.validate())]
     pub fn buy_nft_in_token(ctx: Context<Self>, args: BuyNftInTokenArgs) -> Result<()> {
         let transfer_accounts = TransferChecked {
-            from: ctx.accounts.buyer.to_account_info(),
-            mint: ctx.accounts.salesperson.to_account_info(),
-            to:   ctx.accounts.salesperson_token_mint.to_account_info(),
+            from:      ctx.accounts.buyer_token_transfer.to_account_info(),
+            mint:      ctx.accounts.salesperson_token_mint.to_account_info(),
+            to:        ctx.accounts.salesperson_token_receive.to_account_info(),
             authority: ctx.accounts.buyer.to_account_info(),
         };
 
@@ -147,6 +167,11 @@ impl<'info> BuyNftInToken<'info> {
             .new_owner(&ctx.accounts.buyer.to_account_info())
             .system_program(Some(&ctx.accounts.system_program.to_account_info()))
             .invoke_signed(&[lot_seeds])?;
+
+        let lot = &mut ctx.accounts.lot;
+        lot.status = LotStatus::Sold {
+            timestamp: Clock::get()?.unix_timestamp,
+        };
 
         Ok(())
     }
