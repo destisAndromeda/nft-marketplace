@@ -1,7 +1,9 @@
 use anchor_lang::prelude::*;
+use anchor_lang::system_program;
 use anchor_lang::solana_program::{
     program,
     system_instruction,
+    native_token::LAMPORTS_PER_SOL,
 };
 
 use mpl_core::{ 
@@ -54,10 +56,15 @@ pub struct BuyNft<'info> {
     pub marketplace: Account<'info, Marketplace>,
 
     #[account(
+        has_one = treasury,
         seeds = [SEED_PROGRAM_PREFIX, SEED_PROGRAM_CONFIG],
         bump  = program_config.bump,
     )]
     pub program_config: Account<'info, ProgramConfig>,
+
+    /// CHECK: For transaction fee collecting
+    #[account(mut)]
+    pub treasury: AccountInfo<'info>,
 
     /// CHECK: Lot owner, gets money
     #[account(mut, address = lot.owner)]
@@ -100,18 +107,40 @@ impl<'info> BuyNft<'info> {
             timestamp: Clock::get()?.unix_timestamp,
         };
 
-        program::invoke(
-            &system_instruction::transfer(
-                ctx.accounts.buyer.key,
-                ctx.accounts.salesperson.key,
-                ctx.accounts.lot.price,
-            ),
-            &[
-                ctx.accounts.buyer.to_account_info(),
-                ctx.accounts.salesperson.to_account_info(),
+        let buy_fee = ctx.accounts.marketplace.transaction_fee;
+        let seller_amount = ctx.accounts.lot.price - buy_fee;
+
+        #[cfg(feature = "testing")]
+        {
+            program::invoke(
+                &system_instruction::transfer(
+                    ctx.accounts.buyer.key,
+                    ctx.accounts.salesperson.key,
+                    seller_amount,
+                ),
+                &[
+                    ctx.accounts.buyer.to_account_info(),
+                    ctx.accounts.salesperson.to_account_info(),
+                    ctx.accounts.system_program.to_account_info(),
+                ],
+            )?;
+        }
+        #[cfg(not(feature = "testing"))]
+        {
+            let context = CpiContext::new(
                 ctx.accounts.system_program.to_account_info(),
-            ],
-        )?;
+                system_program::Transfer {
+                    from: ctx.accounts.buyer.to_account_info(),
+                    to:   ctx.accounts.salesperson.to_account_info(),
+
+                },
+            );
+
+            system_program::transfer(
+                context,
+                seller_amount,
+            )?;
+        }
 
         let marketplace_key = ctx.accounts.marketplace.key();
         let salesperson_key = args.salesperson.key();
@@ -137,15 +166,29 @@ impl<'info> BuyNft<'info> {
                 .new_owner(&ctx.accounts.buyer.to_account_info())
                 .system_program(Some(&ctx.accounts.system_program.to_account_info()))
                 .invoke_signed(&[lot_seeds])?;
+
+            if buy_fee > 0 {
+                let context = CpiContext::new(
+                    ctx.accounts.system_program.to_account_info(),
+                    system_program::Transfer {
+                        from: ctx.accounts.buyer.to_account_info(),
+                        to:   ctx.accounts.treasury.to_account_info(),
+                    },
+                );
+
+                system_program::transfer(
+                    context,
+                    buy_fee,
+                )?;
+
+                msg!("Buy fee: {}\n", buy_fee / LAMPORTS_PER_SOL);
+            }
+
         }
         #[cfg(feature = "testing")]
         {
             msg!("Skipping Metaplex Core CPI in testing mode");
         }
-
-        // if ctx.accounts.marketplace.fee_percentage > 0 {
-
-        // }
 
         Ok(())
     }

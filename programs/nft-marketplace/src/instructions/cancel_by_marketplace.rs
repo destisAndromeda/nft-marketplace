@@ -64,7 +64,11 @@ pub struct CancelByMarketplace<'info> {
     pub asset: UncheckedAccount<'info>,
 
     /// CHECK: Source owner of asset
-    #[account(mut)]
+    #[account(
+        mut,
+        address = lot.owner
+            @ CustomError::IncorrectAccountForRefund
+    )]
     pub source_owner: UncheckedAccount<'info>,
 
     /// CHECK: MPL Core Program

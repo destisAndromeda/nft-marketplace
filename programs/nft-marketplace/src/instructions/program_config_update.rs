@@ -19,7 +19,7 @@ pub struct ProgramConfigUpdate<'info> {
         mut,
         has_one = authority @ CustomError::Unauthorized,
         seeds   = [SEED_PROGRAM_PREFIX, SEED_PROGRAM_CONFIG],
-        bump,
+        bump    = program_config.bump,
     )]
     pub program_config: Account<'info, ProgramConfig>,
 

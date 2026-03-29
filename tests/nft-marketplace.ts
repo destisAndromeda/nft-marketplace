@@ -23,7 +23,7 @@ describe("nft-marketplace", () => {
 
   const initialAuthority = anchor.web3.Keypair.generate();
   const initialTreasury = anchor.web3.Keypair.generate().publicKey;
-  
+
   // Shared state for flow tests
   const marketplaceIndex = new anchor.BN(0);
   const lotIndex = new anchor.BN(0);
@@ -66,7 +66,7 @@ describe("nft-marketplace", () => {
     await program.methods
       .marketplaceCreate({
         localAdmin: initialAuthority.publicKey,
-        transactionFee: new anchor.BN(500),
+        feePercentage: new anchor.BN(500),
       })
       .accounts({
         owner: initialAuthority.publicKey,
@@ -147,27 +147,27 @@ describe("nft-marketplace", () => {
 
   // it("Attaches an NFT to a lot", async () => {
 
-    const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
-      [
-        Buffer.from("marketplace"),
-        initialAuthority.publicKey.toBuffer(),
-        Buffer.from("marketplace"),
-        marketplaceIndex.toArrayLike(Buffer, "le", 8),
-      ],
-      program.programId
-    );
+  const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("marketplace"),
+      initialAuthority.publicKey.toBuffer(),
+      Buffer.from("marketplace"),
+      marketplaceIndex.toArrayLike(Buffer, "le", 8),
+    ],
+    program.programId
+  );
 
-    const [lotPda] = anchor.web3.PublicKey.findProgramAddressSync(
-      [
-        Buffer.from("marketplace"),
-        marketplacePda.toBuffer(),
-        Buffer.from("transaction"),
-        initialAuthority.publicKey.toBuffer(),
-        Buffer.from("lot"),
-        lotIndex.toArrayLike(Buffer, "le", 8),
-      ],
-      program.programId
-    );
+  const [lotPda] = anchor.web3.PublicKey.findProgramAddressSync(
+    [
+      Buffer.from("marketplace"),
+      marketplacePda.toBuffer(),
+      Buffer.from("transaction"),
+      initialAuthority.publicKey.toBuffer(),
+      Buffer.from("lot"),
+      lotIndex.toArrayLike(Buffer, "le", 8),
+    ],
+    program.programId
+  );
 
   //   await program.methods
   //     .attachNft({
