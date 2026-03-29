@@ -64,7 +64,7 @@ impl<'info> LotCreate<'info> {
         let owner = ctx.accounts.owner.key();
 
         let asset = args.asset.key();
-        let currency = None;
+        let currency = args.currency;
 
         let price = args.price;
         let status = LotStatus::Created {

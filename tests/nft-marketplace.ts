@@ -7,6 +7,7 @@ import {
   getOrCreateAssociatedTokenAccount,
   mintTo,
   TOKEN_PROGRAM_ID,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import { BN } from "bn.js";
 
@@ -358,9 +359,15 @@ describe("nft-marketplace", () => {
     expect(sellerBalanceAfter).to.be.greaterThan(sellerBalanceBefore);
   });
 
-  it("Cancels a lot by marketplace", async () => {
-    const marketplaceIndex = new anchor.BN(0);
-    const lotIndex = new anchor.BN(1); // Use a new lot index for cancellation test
+  it("Buys an NFT with SPL token", async () => {
+    const buyer = anchor.web3.Keypair.generate();
+
+    // Airdrop SOL to buyer (for fees and rent)
+    const sig = await provider.connection.requestAirdrop(
+      buyer.publicKey,
+      3 * anchor.web3.LAMPORTS_PER_SOL
+    );
+    await provider.connection.confirmTransaction(sig);
 
     const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
       [
@@ -371,6 +378,182 @@ describe("nft-marketplace", () => {
       ],
       program.programId
     );
+
+    // lot_create uses marketplace.transaction_index as the lot seed (not a caller arg),
+    // so we must read it BEFORE creating the lot.
+    const marketplaceState = await program.account.marketplace.fetch(marketplacePda);
+    const tokenLotIndex = marketplaceState.transactionIndex;
+
+    const [lotPda] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("marketplace"),
+        marketplacePda.toBuffer(),
+        Buffer.from("transaction"),
+        initialAuthority.publicKey.toBuffer(),
+        Buffer.from("lot"),
+        tokenLotIndex.toArrayLike(Buffer, "le", 8),
+      ],
+      program.programId
+    );
+
+    // Create SPL token mint (payment currency)
+    const tokenMint = await createMint(
+      provider.connection,
+      initialAuthority,
+      initialAuthority.publicKey,
+      null,
+      6 // 6 decimals
+    );
+
+    // Create a separate NFT mint for the lot asset
+    const nftMint = await createMint(
+      provider.connection,
+      initialAuthority,
+      initialAuthority.publicKey,
+      null,
+      0
+    );
+
+    // Mint SPL tokens to buyer's ATA
+    const buyerTokenAta = await getOrCreateAssociatedTokenAccount(
+      provider.connection,
+      initialAuthority,
+      tokenMint,
+      buyer.publicKey
+    );
+    const TOKEN_PRICE = 2_000_000; // 2 tokens (6 decimals)
+    await mintTo(
+      provider.connection,
+      initialAuthority,
+      tokenMint,
+      buyerTokenAta.address,
+      initialAuthority,
+      TOKEN_PRICE * 2 // mint double to have headroom
+    );
+
+    // Create lot
+    await program.methods
+      .lotCreate({
+        marketplaceIndex,
+        asset: nftMint,
+        currency: tokenMint,
+        price: new anchor.BN(TOKEN_PRICE),
+      })
+      .accounts({
+        owner: initialAuthority.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
+        programConfig: programConfigPda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .signers([initialAuthority])
+      .rpc();
+
+    // List NFT (sets lot.is_listed = true)
+    try {
+      await program.methods
+        .listNft({
+          marketplaceIndex,
+          lotIndex: tokenLotIndex,
+          salesperson: initialAuthority.publicKey,
+        })
+        .accounts({
+          owner: initialAuthority.publicKey,
+          lot: lotPda,
+          marketplace: marketplacePda,
+          programConfig: programConfigPda,
+          systemProgram: anchor.web3.SystemProgram.programId,
+          asset: nftMint,
+          coreProgram: new anchor.web3.PublicKey("CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"),
+        })
+        .signers([initialAuthority])
+        .rpc();
+    } catch (err: any) {
+      console.log("Listing info:", err.message);
+    }
+
+    // Place lot
+    await program.methods
+      .placeLot({ marketplaceIndex, lotIndex: tokenLotIndex })
+      .accounts({
+        owner: initialAuthority.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
+        programConfig: programConfigPda,
+      })
+      .signers([initialAuthority])
+      .rpc();
+
+    // Make lot available for sale
+    await program.methods
+      .makeLotAvailableForSale({ marketplaceIndex, lotIndex: tokenLotIndex })
+      .accounts({
+        owner: initialAuthority.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
+        programConfig: programConfigPda,
+      })
+      .signers([initialAuthority])
+      .rpc();
+
+    // Get seller ATA before (will be created by init_if_needed)
+    const sellerTokenAta = await getOrCreateAssociatedTokenAccount(
+      provider.connection,
+      initialAuthority,
+      tokenMint,
+      initialAuthority.publicKey
+    );
+    const sellerBalanceBefore = (
+      await provider.connection.getTokenAccountBalance(sellerTokenAta.address)
+    ).value.uiAmount;
+
+    // Buy NFT with SPL token
+    await program.methods
+      .buyNftInToken({
+        marketplaceIndex,
+        lotIndex: tokenLotIndex,
+        lotOwner: initialAuthority.publicKey,
+      })
+      .accounts({
+        buyer: buyer.publicKey,
+        lot: lotPda,
+        marketplace: marketplacePda,
+        programConfig: programConfigPda,
+        salesperson: initialAuthority.publicKey,
+        asset: nftMint,
+        coreProgram: new anchor.web3.PublicKey("CoREENxT6tW1HoK8ypY1SxRMZTcVPm7R94rH4PZNhX7d"),
+        salespersonTokenMint: tokenMint,
+        salespersonTokenReceive: sellerTokenAta.address,
+        buyerTokenTransfer: buyerTokenAta.address,
+        systemProgram: anchor.web3.SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .signers([buyer])
+      .rpc();
+
+    const sellerBalanceAfter = (
+      await provider.connection.getTokenAccountBalance(sellerTokenAta.address)
+    ).value.uiAmount;
+
+    expect(sellerBalanceAfter).to.be.greaterThan(sellerBalanceBefore ?? 0);
+  });
+
+  it("Cancels a lot by marketplace", async () => {
+    const marketplaceIndex = new anchor.BN(0);
+
+    const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
+      [
+        Buffer.from("marketplace"),
+        initialAuthority.publicKey.toBuffer(),
+        Buffer.from("marketplace"),
+        marketplaceIndex.toArrayLike(Buffer, "le", 8),
+      ],
+      program.programId
+    );
+
+    const marketplaceState1 = await program.account.marketplace.fetch(marketplacePda);
+    const lotIndex = marketplaceState1.transactionIndex;
 
     const [lotPda] = anchor.web3.PublicKey.findProgramAddressSync(
       [
@@ -434,7 +617,6 @@ describe("nft-marketplace", () => {
 
   it("Cancels a lot by owner", async () => {
     const marketplaceIndex = new anchor.BN(0);
-    const lotIndex = new anchor.BN(2); // Use a new lot index for cancellation test
 
     const [marketplacePda] = anchor.web3.PublicKey.findProgramAddressSync(
       [
@@ -445,6 +627,9 @@ describe("nft-marketplace", () => {
       ],
       program.programId
     );
+
+    const marketplaceState2 = await program.account.marketplace.fetch(marketplacePda);
+    const lotIndex = marketplaceState2.transactionIndex;
 
     const [lotPda] = anchor.web3.PublicKey.findProgramAddressSync(
       [

@@ -21,7 +21,9 @@ pub struct BuyNftInSolArgs {
 
     pub lot_index: u64,
 
-    pub salesperson: Pubkey, // @TODO: use only transfered account in BuyNftInSol
+    // @TODO: use only transfered account in BuyNftInSol
+    // it will break the test
+    pub salesperson: Pubkey,
 }
 
 #[derive(Accounts)]

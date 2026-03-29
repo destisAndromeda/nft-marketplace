@@ -80,6 +80,9 @@ pub struct BuyNftInToken<'info> {
     #[account(address = programs::MPL_CORE_ID)]
     pub core_program: UncheckedAccount<'info>,
 
+    #[account(address = lot.currency.unwrap()
+        @ CustomError::InvalidAsset,
+    )]
     pub salesperson_token_mint: InterfaceAccount<'info, Mint>,
 
     #[account(

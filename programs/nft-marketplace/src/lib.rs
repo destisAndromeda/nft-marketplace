@@ -69,6 +69,13 @@ pub mod nft_marketplace {
         BuyNftInSol::buy_nft_in_sol(ctx, args)
     }
 
+    pub fn buy_nft_in_token(
+        ctx: Context<BuyNftInToken>,
+        args: BuyNftInTokenArgs,
+    ) -> Result<()> {
+        BuyNftInToken::buy_nft_in_token(ctx, args)
+    }
+
     pub fn list_nft(
         ctx: Context<ListNft>,
         args: ListNftArgs,
