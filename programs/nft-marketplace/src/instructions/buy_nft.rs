@@ -108,7 +108,9 @@ impl<'info> BuyNft<'info> {
         };
 
         let buy_fee = ctx.accounts.marketplace.transaction_fee;
-        let seller_amount = ctx.accounts.lot.price - buy_fee;
+        let seller_amount = ctx.accounts.lot.price.checked_sub(buy_fee).ok_or(
+            CustomError::NotEnoughMoney,
+        )?;
 
         #[cfg(feature = "testing")]
         {
