@@ -24,7 +24,7 @@ pub struct ProgramConfigInit<'info> {
     #[account(
         init,
         payer = initializer,
-        seeds = [PROGRAM_PREFIX, PROGRAM_CONFIG],
+        seeds = [SEED_PROGRAM_PREFIX, SEED_PROGRAM_CONFIG],
         space = 8 + ProgramConfig::INIT_SPACE,
         bump,
     )]
@@ -41,20 +41,6 @@ pub struct ProgramConfigInit<'info> {
 
 impl<'info> ProgramConfigInit<'info> {
     pub fn program_config_init(ctx: Context<Self>, args: ProgramConfigArgs) -> Result<()> {
-    
-        #[cfg(not(feature = "refactor"))]
-        {
-            let program_config = &mut ctx.accounts.program_config;
-
-            program_config.authority = args.authority;
-            program_config.treasury  = args.treasury;
-            program_config.marketplace_deploy_authority = args.marketplace_deploy_authority;
-            program_config.bump = ctx.bumps.program_config;
-
-            program_config.transaction_index = 0;
-        }
-        #[cfg(feature = "refactor")]
-        {
             let authority = args.authority;
             let treasury  = args.treasury;
             let marketplace_deploy_authority = args.marketplace_deploy_authority;
@@ -68,7 +54,6 @@ impl<'info> ProgramConfigInit<'info> {
                 transaction_index,
                 bump,
             });
-        }
 
         Ok(())
     }

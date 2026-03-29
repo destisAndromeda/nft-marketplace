@@ -18,7 +18,7 @@ pub struct ProgramConfigUpdate<'info> {
     #[account(
         mut,
         has_one = authority @ CustomError::Unauthorized,
-        seeds   = [PROGRAM_PREFIX, PROGRAM_CONFIG],
+        seeds   = [SEED_PROGRAM_PREFIX, SEED_PROGRAM_CONFIG],
         bump,
     )]
     pub program_config: Account<'info, ProgramConfig>,

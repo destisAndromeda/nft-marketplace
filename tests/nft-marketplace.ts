@@ -66,7 +66,7 @@ describe("nft-marketplace", () => {
     await program.methods
       .marketplaceCreate({
         localAdmin: initialAuthority.publicKey,
-        feePercentage: new anchor.BN(500),
+        transactionFee: new anchor.BN(500),
       })
       .accounts({
         owner: initialAuthority.publicKey,
@@ -518,9 +518,9 @@ describe("nft-marketplace", () => {
 
     const newFee = new anchor.BN(1000);
     await program.methods
-      .marketplaceFeePercentageUpdate({
+      .marketplaceTransactionFeeUpdate({
         selfIndex: marketplaceIndex,
-        feePercentage: newFee,
+        transactionFee: newFee,
       })
       .accounts({
         marketplace: marketplacePda,
@@ -531,7 +531,7 @@ describe("nft-marketplace", () => {
       .rpc();
 
     const marketplaceAccount = await program.account.marketplace.fetch(marketplacePda);
-    expect(marketplaceAccount.feePercentage.toNumber()).to.equal(newFee.toNumber());
+    expect(marketplaceAccount.transactionFee.toNumber()).to.equal(newFee.toNumber());
   });
 
   it("Updates program config", async () => {

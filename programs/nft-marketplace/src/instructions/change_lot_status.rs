@@ -20,11 +20,11 @@ pub struct ChangeLotStatus<'info> {
         mut,
         has_one = owner,
         seeds   = [
-            PROGRAM_PREFIX,
+            SEED_PROGRAM_PREFIX,
             marketplace.key().as_ref(),
-            TRANSACTION,
+            SEED_TRANSACTION,
             owner.key().as_ref(),
-            LOT,
+            SEED_LOT,
             &args.lot_index.to_le_bytes(),
         ],
         bump  = lot.bump,
@@ -33,9 +33,9 @@ pub struct ChangeLotStatus<'info> {
 
     #[account(
         seeds = [
-            PROGRAM_PREFIX,
+            SEED_PROGRAM_PREFIX,
             program_config.marketplace_deploy_authority.key().as_ref(),
-            MARKETPLACE,
+            SEED_MARKETPLACE,
             &args.marketplace_index.to_le_bytes(),
         ],
         bump  = marketplace.bump,
@@ -43,7 +43,7 @@ pub struct ChangeLotStatus<'info> {
     pub marketplace: Account<'info, Marketplace>,
 
     #[account(
-        seeds = [PROGRAM_PREFIX, PROGRAM_CONFIG],
+        seeds = [SEED_PROGRAM_PREFIX, SEED_PROGRAM_CONFIG],
         bump  = program_config.bump,
     )]
     pub program_config: Account<'info, ProgramConfig>,

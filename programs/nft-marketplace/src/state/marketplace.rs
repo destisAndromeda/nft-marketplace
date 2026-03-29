@@ -8,7 +8,7 @@ pub struct Marketplace {
     /// Account key for lots PDA
     pub local_admin: Pubkey,
     /// Marketplace trading fee
-    pub fee_percentage: u64,
+    pub transaction_fee: u64,
     /// For lot PDA compute
     pub transaction_index: u64,
     // Bump for marketplace PDA seed

@@ -1,7 +1,7 @@
 pub mod program_config_init;
 pub mod program_config_update;
 pub mod marketplace_create;
-pub mod marketplace_fee_percentage_update;
+pub mod marketplace_transaction_fee_update;
 pub mod lot_create;
 pub mod change_lot_status;
 pub mod buy_nft;
@@ -12,7 +12,7 @@ pub mod cancel_by_owner;
 pub use program_config_init::*;
 pub use program_config_update::*;
 pub use marketplace_create::*;
-pub use marketplace_fee_percentage_update::*;
+pub use marketplace_transaction_fee_update::*;
 pub use lot_create::*;
 pub use change_lot_status::*;
 pub use buy_nft::*;

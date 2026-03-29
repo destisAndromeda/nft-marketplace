@@ -31,11 +31,11 @@ pub struct BuyNft<'info> {
     #[account(
         mut,
         seeds = [
-            PROGRAM_PREFIX,
+            SEED_PROGRAM_PREFIX,
             marketplace.key().as_ref(),
-            TRANSACTION,
+            SEED_TRANSACTION,
             &args.salesperson.key().as_ref(),
-            LOT,
+            SEED_LOT,
             &args.lot_index.to_le_bytes(),
         ],
         bump  = lot.bump,
@@ -44,9 +44,9 @@ pub struct BuyNft<'info> {
 
     #[account(
         seeds = [
-            PROGRAM_PREFIX,
+            SEED_PROGRAM_PREFIX,
             program_config.marketplace_deploy_authority.key().as_ref(),
-            MARKETPLACE,
+            SEED_MARKETPLACE,
             &args.marketplace_index.to_le_bytes(),
         ],
         bump  = marketplace.bump,
@@ -54,7 +54,7 @@ pub struct BuyNft<'info> {
     pub marketplace: Account<'info, Marketplace>,
 
     #[account(
-        seeds = [PROGRAM_PREFIX, PROGRAM_CONFIG],
+        seeds = [SEED_PROGRAM_PREFIX, SEED_PROGRAM_CONFIG],
         bump  = program_config.bump,
     )]
     pub program_config: Account<'info, ProgramConfig>,
@@ -119,11 +119,11 @@ impl<'info> BuyNft<'info> {
         let lot_bump        = ctx.accounts.lot.bump;
 
         let lot_seeds: &[&[u8]] = &[
-            PROGRAM_PREFIX,
+            SEED_PROGRAM_PREFIX,
             marketplace_key.as_ref(),
-            TRANSACTION,
+            SEED_TRANSACTION,
             salesperson_key.as_ref(),
-            LOT,
+            SEED_LOT,
             &lot_index_bytes,
             &[lot_bump]
         ];
@@ -142,6 +142,10 @@ impl<'info> BuyNft<'info> {
         {
             msg!("Skipping Metaplex Core CPI in testing mode");
         }
+
+        // if ctx.accounts.marketplace.fee_percentage > 0 {
+
+        // }
 
         Ok(())
     }
