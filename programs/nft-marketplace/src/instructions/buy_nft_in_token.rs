@@ -176,6 +176,8 @@ impl<'info> BuyNftInToken<'info> {
             timestamp: Clock::get()?.unix_timestamp,
         };
 
+        lot.is_listed = false;
+
         Ok(())
     }
 }

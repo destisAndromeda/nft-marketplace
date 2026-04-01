@@ -187,12 +187,14 @@ impl<'info> BuyNftInSol<'info> {
 
                 msg!("Buy fee: {}\n", buy_fee / LAMPORTS_PER_SOL);
             }
-
         }
         #[cfg(feature = "testing")]
         {
             msg!("Skipping Metaplex Core CPI in testing mode");
         }
+
+        let lot = &mut ctx.accounts.lot;
+        lot.is_listed = false;
 
         Ok(())
     }

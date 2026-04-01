@@ -1,0 +1,101 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #0b1020;
+  color: #e7eaf3;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+h1,
+h2 {
+  margin: 0 0 12px;
+}
+
+.subtitle {
+  margin-bottom: 18px;
+  color: #b4bfd8;
+}
+
+.card {
+  background: #121a30;
+  border: 1px solid #243255;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 14px;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+label {
+  font-size: 13px;
+  color: #a4afca;
+}
+
+input {
+  width: 100%;
+  border: 1px solid #314674;
+  background: #0e1730;
+  color: #e7eaf3;
+  border-radius: 8px;
+  padding: 9px 10px;
+}
+
+button {
+  border: 1px solid #4060a5;
+  background: #2a4f9d;
+  color: #fff;
+  border-radius: 8px;
+  padding: 9px 12px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #3562bf;
+}
+
+.buttonRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+#walletText {
+  margin-top: 10px;
+  color: #9db8ff;
+}
+
+#logs {
+  margin: 0;
+  min-height: 120px;
+  background: #090f20;
+  border: 1px solid #1f2e52;
+  border-radius: 8px;
+  padding: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+@media (max-width: 860px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
