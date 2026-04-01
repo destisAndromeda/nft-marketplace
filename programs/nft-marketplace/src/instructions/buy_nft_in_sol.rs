@@ -21,7 +21,7 @@ pub struct BuyNftInSolArgs {
 
     pub lot_index: u64,
 
-    // @TODO: use only transfered account in BuyNftInSol
+    // @TODO: use only transferred account in BuyNftInSol
     // it will break the test
     pub salesperson: Pubkey,
 }
@@ -34,6 +34,8 @@ pub struct BuyNftInSol<'info> {
 
     #[account(
         mut,
+        constraint = lot.currency.is_none()
+            @ CustomError::InvalidPrice,
         seeds = [
             SEED_PROGRAM_PREFIX,
             marketplace.key().as_ref(),

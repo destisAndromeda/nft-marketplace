@@ -23,6 +23,9 @@ pub enum CustomError {
     #[msg("Invalid Lot Status")]
     InvalidLotStatus,
 
+    #[msg("Invalid Price")]
+    InvalidPrice,
+
     #[msg("Lot Is Placed")]
     LotIsPlaced,
 
