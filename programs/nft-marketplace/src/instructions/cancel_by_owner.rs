@@ -1,9 +1,8 @@
 use anchor_lang::prelude::*;
 
-use mpl_core::{
-    instructions::TransferV1CpiBuilder,
-    programs,
-};
+use mpl_core::programs;
+#[cfg(not(feature = "testing"))]
+use mpl_core::instructions::TransferV1CpiBuilder;
 
 use crate::state::*;
 use crate::seeds::*;
@@ -87,29 +86,32 @@ impl<'info> CancelByOwner<'info> {
 
     #[access_control(ctx.accounts.validate())]
     pub fn cancel_by_owner(ctx: Context<Self>, args: CancelByOwnerArgs) -> Result<()> {
+        #[cfg(feature = "testing")]
+        let _ = &args;
+
         let lot = &mut ctx.accounts.lot;
 
         lot.status = LotStatus::CancelledByOwner {
             timestamp: Clock::get()?.unix_timestamp,
         };
 
-        let marketplace_key = ctx.accounts.marketplace.key();
-        let owner_key       = ctx.accounts.lot.owner.key();
-        let lot_index_bytes = args.lot_index.to_le_bytes();
-        let lot_bump        = ctx.accounts.lot.bump;
-
-        let lot_seeds: &[&[u8]] = &[
-            SEED_PROGRAM_PREFIX,
-            marketplace_key.as_ref(),
-            SEED_TRANSACTION,
-            owner_key.as_ref(),
-            SEED_LOT,
-            &lot_index_bytes,
-            &[lot_bump],
-        ];
-
         #[cfg(not(feature = "testing"))]
         {
+            let marketplace_key = ctx.accounts.marketplace.key();
+            let owner_key       = ctx.accounts.lot.owner.key();
+            let lot_index_bytes = args.lot_index.to_le_bytes();
+            let lot_bump        = ctx.accounts.lot.bump;
+
+            let lot_seeds: &[&[u8]] = &[
+                SEED_PROGRAM_PREFIX,
+                marketplace_key.as_ref(),
+                SEED_TRANSACTION,
+                owner_key.as_ref(),
+                SEED_LOT,
+                &lot_index_bytes,
+                &[lot_bump],
+            ];
+
             TransferV1CpiBuilder::new(&ctx.accounts.core_program.to_account_info())
                 .asset(&ctx.accounts.asset.to_account_info())
                 .payer(&ctx.accounts.owner.to_account_info())

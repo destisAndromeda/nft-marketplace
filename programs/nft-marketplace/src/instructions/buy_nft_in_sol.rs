@@ -1,15 +1,17 @@
 use anchor_lang::prelude::*;
+#[cfg(not(feature = "testing"))]
 use anchor_lang::system_program;
+#[cfg(feature = "testing")]
 use anchor_lang::solana_program::{
     program,
     system_instruction,
-    native_token::LAMPORTS_PER_SOL,
 };
+#[cfg(not(feature = "testing"))]
+use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 
-use mpl_core::{ 
-    instructions::TransferV1CpiBuilder,
-    programs,
-};
+use mpl_core::programs;
+#[cfg(not(feature = "testing"))]
+use mpl_core::instructions::TransferV1CpiBuilder;
 
 use crate::state::*;
 use crate::seeds::*;
@@ -107,6 +109,9 @@ impl<'info> BuyNftInSol<'info> {
 
     #[access_control(ctx.accounts.validate())]
     pub fn buy_nft_in_sol(ctx: Context<Self>, args: BuyNftInSolArgs) -> Result<()> {
+        #[cfg(feature = "testing")]
+        let _ = &args;
+
         ctx.accounts.lot.status = LotStatus::Sold {
             timestamp: Clock::get()?.unix_timestamp,
         };
@@ -148,23 +153,23 @@ impl<'info> BuyNftInSol<'info> {
             )?;
         }
 
-        let marketplace_key = ctx.accounts.marketplace.key();
-        let salesperson_key = args.salesperson.key();
-        let lot_index_bytes = args.lot_index.to_le_bytes();
-        let lot_bump        = ctx.accounts.lot.bump;
-
-        let lot_seeds: &[&[u8]] = &[
-            SEED_PROGRAM_PREFIX,
-            marketplace_key.as_ref(),
-            SEED_TRANSACTION,
-            salesperson_key.as_ref(),
-            SEED_LOT,
-            &lot_index_bytes,
-            &[lot_bump],
-        ];
-
         #[cfg(not(feature = "testing"))]
         {
+            let marketplace_key = ctx.accounts.marketplace.key();
+            let salesperson_key = args.salesperson.key();
+            let lot_index_bytes = args.lot_index.to_le_bytes();
+            let lot_bump        = ctx.accounts.lot.bump;
+
+            let lot_seeds: &[&[u8]] = &[
+                SEED_PROGRAM_PREFIX,
+                marketplace_key.as_ref(),
+                SEED_TRANSACTION,
+                salesperson_key.as_ref(),
+                SEED_LOT,
+                &lot_index_bytes,
+                &[lot_bump],
+            ];
+
             TransferV1CpiBuilder::new(&ctx.accounts.core_program.to_account_info())
                 .asset(&ctx.accounts.asset.to_account_info())
                 .payer(&ctx.accounts.buyer.to_account_info())

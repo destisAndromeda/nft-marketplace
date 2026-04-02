@@ -1,8 +1,7 @@
 use anchor_lang::prelude::*;
-use mpl_core::{
-    programs,
-    instructions::TransferV1CpiBuilder,
-};
+use mpl_core::programs;
+#[cfg(not(feature = "testing"))]
+use mpl_core::instructions::TransferV1CpiBuilder;
 
 use crate::state::*;
 use crate::seeds::*;
@@ -14,7 +13,7 @@ pub struct ListNftArgs {
 
     pub lot_index: u64,
 
-    pub salesperson: Pubkey,
+    // pub salesperson: Pubkey,
 }
 
 #[derive(Accounts)]
@@ -91,9 +90,9 @@ impl<'info> ListNft<'info> {
     pub fn list_nft(ctx: Context<Self>, _args: ListNftArgs) -> Result<()> {
         ctx.accounts.lot.is_listed = true;
 
-        let context = &ctx.accounts;
         #[cfg(not(feature = "testing"))]
         {
+            let context = &ctx.accounts;
             TransferV1CpiBuilder::new(&context.core_program.to_account_info())
                 .asset(&context.asset.to_account_info())
                 .payer(&context.owner.to_account_info())
