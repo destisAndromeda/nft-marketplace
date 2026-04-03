@@ -5,7 +5,7 @@ use crate::seeds::*;
 use crate::error::*;
 
 #[cfg(not(feature = "testing"))]
-const INITIALIZER: Pubkey = pubkey!("GtmrJehR49tXwFh7W4x2kGy61czbEboYSkHQDJw7Ggeb");
+const INITIALIZER: Pubkey = pubkey!("GAe1b8H1eUQhGuwAEJKstXLFdpaoHp9voszu1uw46Htm");
 
 #[cfg(feature = "testing")]
 const INITIALIZER: Pubkey = pubkey!("GAe1b8H1eUQhGuwAEJKstXLFdpaoHp9voszu1uw46Htm"); 

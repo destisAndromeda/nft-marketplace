@@ -7,7 +7,7 @@ mod instructions;
 
 use crate::instructions::*;
 
-declare_id!("3xypSWG2NbT5Sx3htRgtqy87AEtyu61tvTp1sJab5o2X");
+declare_id!("4NBFkD8BfWQSCsjuEHpw5yMLyU6vMuNWopF4Vz9ot4wD");
 
 #[program]
 pub mod nft_marketplace {

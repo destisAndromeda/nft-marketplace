@@ -7,13 +7,13 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-nft_marketplace = "3xypSWG2NbT5Sx3htRgtqy87AEtyu61tvTp1sJab5o2X"
+nft_marketplace = "4NBFkD8BfWQSCsjuEHpw5yMLyU6vMuNWopF4Vz9ot4wD"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "~/.config/solana/id.json"
 
 [scripts]
